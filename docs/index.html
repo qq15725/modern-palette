@@ -3,18 +3,17 @@
 <head>
   <meta charset="utf-8">
   <title>Playground</title>
+  <script src="https://unpkg.com/modern-palette"></script>
 </head>
 <body>
 
-<img src="/example.jpg" style="width: 200px;" />
+<img src="/public/example.jpg" style="width: 200px;" />
 <canvas width="20" height="20" style="width: 200px;"></canvas>
 
 <script type="module" async>
-  import { createPalette } from '../src'
-
   const el = document.querySelector('canvas')
   const elContext2d = el.getContext('2d')
-  const palette = createPalette({
+  const palette = modernPalette.createPalette({
     maxColors: 400,
   })
 
