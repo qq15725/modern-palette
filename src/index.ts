@@ -1,1 +1,3 @@
-export const one = 1
+export * from './create-palette'
+export * from './palette'
+export * from './options'
