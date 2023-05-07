@@ -1,13 +1,13 @@
-export function convertColors(rawColors: number[], type: 'hex'): string[]
-export function convertColors(rawColors: number[], type: 'rgb'): [number, number, number][]
-export function convertColors(rawColors: number[], type: 'buffer'): Uint8ClampedArray
-export function convertColors(rawColors: number[]): number[]
-export function convertColors(rawColors: number[], type?: string) {
-  if (!type) return rawColors
+import type { Context } from './context'
+
+export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
+  if (!type) return context.colorRanges.map(val => val.color)
+
+  const { colorRanges } = context
 
   const colors: [number, number, number][] = []
-  for (let len = rawColors.length, i = 0; i < len; i++) {
-    const color = rawColors[i]
+  for (let len = colorRanges.length, i = 0; i < len; i++) {
+    const color = colorRanges[i].color
     colors.push([
       color >> 16 & 0xFF,
       color >> 8 & 0xFF,

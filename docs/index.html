@@ -3,18 +3,24 @@
 <head>
   <meta charset="utf-8">
   <title>Playground</title>
-  <script src="https://unpkg.com/modern-palette"></script>
 </head>
 <body>
 
-<img src="/public/example.jpg" style="width: 200px;" />
-<canvas width="20" height="20" style="width: 200px;"></canvas>
+<img src="/example.jpg" style="width: 200px;" />
+<canvas style="width: 200px;"></canvas>
 
 <script type="module" async>
+  import { createPalette } from '../src'
+
+  const maxColors = 32 * 32
+  const size = Math.sqrt(maxColors)
   const el = document.querySelector('canvas')
   const elContext2d = el.getContext('2d')
-  const palette = modernPalette.createPalette({
-    maxColors: 400,
+  el.width = size
+  el.height = size
+
+  const palette = createPalette({
+    maxColors,
   })
 
   await palette.addSample('/example.jpg')
@@ -26,9 +32,10 @@
   console.timeEnd('generate')
 
   const colors = palette.getColors('buffer')
+  elContext2d.putImageData(new ImageData(colors, size, size), 0, 0)
+
   // eslint-disable-next-line no-console
-  console.log(colors)
-  elContext2d.putImageData(new ImageData(colors, 20, 20), 0, 0)
+  console.log(palette, palette.getColors('hex'))
 </script>
 </body>
 </html>

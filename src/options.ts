@@ -7,7 +7,7 @@ export interface Options {
   maxColors?: number
 
   /**
-   * Sample statistical model
+   * Sample statistical mode
    *
    * @default 'full'
    */

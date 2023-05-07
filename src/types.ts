@@ -1,25 +1,29 @@
-export interface Lab {
-  l: number
-  a: number
-  b: number
-}
+// [l, a, b]
+export type Oklab = [number, number, number]
 
-export type SortBy = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
+export type Sort = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
 
 export interface ColorCounter {
-  lab: Lab
+  oklab: Oklab
   count: number
 }
 
-export interface ColorInfo {
-  rgb: number
-  lab: [number, number, number]
+export interface ColorRange {
+  start: number
+  end: number
+  length: number
+  score: number
+  weight: number
+  sort: Sort
+  sorted: Sort | null
+  color: number
+  oklab: Oklab
 }
 
 export interface ColorNode {
-  c: ColorInfo
-  paletteId: number
-  split: number
-  leftId: number
-  rightId: number
+  colorRange: ColorRange
+  colorRangeIndex: number
+  longest: number
+  left: number
+  right: number
 }

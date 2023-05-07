@@ -1,4 +1,8 @@
+import type { Context } from './context'
+
 export interface Palette {
+  context: Context
+
   /**
    * Add sample color data
    */

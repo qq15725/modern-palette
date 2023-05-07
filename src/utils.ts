@@ -1,4 +1,4 @@
-import type { ColorCounter, ColorInfo, Lab, SortBy } from './types'
+import type { ColorCounter, Oklab, Sort } from './types'
 
 export const IN_BROWSER = typeof window !== 'undefined'
 
@@ -127,7 +127,7 @@ function divRound64(a: number, b: number): number {
   return (a ^ b) < 0 ? (a - b / 2) / b : (a + b / 2) / b
 }
 
-export function srgbU8ToOklabInt(rgb: number): Lab {
+export function srgbToOklab(rgb: number): Oklab {
   const r = srgb2linear[rgb >> 16 & 0xFF]
   const g = srgb2linear[rgb >> 8 & 0xFF]
   const b = srgb2linear[rgb & 0xFF]
@@ -141,11 +141,11 @@ export function srgbU8ToOklabInt(rgb: number): Lab {
   const m_ = cbrt01Int(m)
   const s_ = cbrt01Int(s)
 
-  return {
-    l: divRound64(13792 * l_ + 52010 * m_ - 267 * s_, K),
-    a: divRound64(129628 * l_ - 159158 * m_ + 29530 * s_, K),
-    b: divRound64(1698 * l_ + 51299 * m_ - 52997 * s_, K),
-  }
+  return [
+    divRound64(13792 * l_ + 52010 * m_ - 267 * s_, K),
+    divRound64(129628 * l_ - 159158 * m_ + 29530 * s_, K),
+    divRound64(1698 * l_ + 51299 * m_ - 52997 * s_, K),
+  ]
 }
 
 function linearIntToSrgbU8(x: number): number {
@@ -163,10 +163,10 @@ function linearIntToSrgbU8(x: number): number {
   }
 }
 
-export function oklabIntToSrgbU8(c: Lab): number {
-  const l_ = c.l + divRound64(25974 * c.a, K) + divRound64(14143 * c.b, K)
-  const m_ = c.l + divRound64(-6918 * c.a, K) + divRound64(-4185 * c.b, K)
-  const s_ = c.l + divRound64(-5864 * c.a, K) + divRound64(-84638 * c.b, K)
+export function oklabToSrgb(oklab: Oklab): number {
+  const l_ = oklab[0] + divRound64(25974 * oklab[1], K) + divRound64(14143 * oklab[2], K)
+  const m_ = oklab[0] + divRound64(-6918 * oklab[1], K) + divRound64(-4185 * oklab[2], K)
+  const s_ = oklab[0] + divRound64(-5864 * oklab[1], K) + divRound64(-84638 * oklab[2], K)
 
   const l = l_ * l_ * l_ / K2
   const m = m_ * m_ * m_ / K2
@@ -179,29 +179,29 @@ export function oklabIntToSrgbU8(c: Lab): number {
   return r << 16 | g << 8 | b
 }
 
-export function getColorFromSrgb(rgb: number): ColorInfo {
-  const lab = srgbU8ToOklabInt(rgb)
-  return {
-    rgb,
-    lab: [lab.l, lab.a, lab.b],
-  }
-}
-
 export function diffSign(a: number, b: number) {
   return a > b ? 1 : a < b ? -1 : 0
 }
 
-export function createSorter(sort: SortBy) {
-  const [k0, k1, k2] = sort.split('') as ('l' | 'a' | 'b')[]
+export function createSorter(sort: Sort) {
+  const map = { l: 0, a: 1, b: 2 }
+  const k0 = sort[0] as 'l' | 'a' | 'b'
+  const k1 = sort[1] as 'l' | 'a' | 'b'
+  const k2 = sort[2] as 'l' | 'a' | 'b'
+  const k00 = map[k0]
+  const k01 = map[k1]
+  const k02 = map[k2]
+
   return (a: ColorCounter, b: ColorCounter) => {
-    const c0 = diffSign(a.lab[k0], b.lab[k0])
-    const c1 = diffSign(a.lab[k1], b.lab[k1])
-    const c2 = diffSign(a.lab[k2], b.lab[k2])
-    return c0 || (c1 || c2)
+    return diffSign(a.oklab[k00], b.oklab[k00])
+      || (
+        diffSign(a.oklab[k01], b.oklab[k01])
+        || diffSign(a.oklab[k02], b.oklab[k02])
+      )
   }
 }
 
-export function sort3id(x: number, y: number, z: number): SortBy {
+export function sort3id(x: number, y: number, z: number): Sort {
   if (x >= y) {
     if (y >= z) return 'lab'
     if (x >= z) return 'lba'
