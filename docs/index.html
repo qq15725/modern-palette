@@ -9,10 +9,10 @@
 <img src="/example.jpg" style="width: 200px;" />
 <canvas style="width: 200px;"></canvas>
 
-<script type="module" async>
+<script type="module">
   import { createPalette } from '../src'
 
-  const maxColors = 32 * 32
+  const maxColors = 2 * 2
   const size = Math.sqrt(maxColors)
   const el = document.querySelector('canvas')
   const elContext2d = el.getContext('2d')
@@ -23,19 +23,20 @@
     maxColors,
   })
 
-  await palette.addSample('/example.jpg')
+  palette.addSample('/example.jpg').then(() => {
+    // eslint-disable-next-line no-console
+    console.time('generate')
+    palette.generate()
+    // eslint-disable-next-line no-console
+    console.timeEnd('generate')
 
-  // eslint-disable-next-line no-console
-  console.time('generate')
-  palette.generate()
-  // eslint-disable-next-line no-console
-  console.timeEnd('generate')
+    elContext2d.putImageData(new ImageData(palette.getColors('buffer'), size, size), 0, 0)
 
-  const colors = palette.getColors('buffer')
-  elContext2d.putImageData(new ImageData(colors, size, size), 0, 0)
+    const colors = palette.getColors('hex')
 
-  // eslint-disable-next-line no-console
-  console.log(palette, palette.getColors('hex'))
+    // eslint-disable-next-line no-console
+    console.log(palette, colors)
+  })
 </script>
 </body>
 </html>

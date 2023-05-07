@@ -17,10 +17,10 @@ export interface Palette {
   /**
    * Get colors on the palette
    */
-  getColors(type: 'rgb'): [number, number, number][]
-  getColors(type: 'hex'): string[]
+  getColors(type: 'rgb'): { color: [number, number, number]; percentage: number }[]
+  getColors(type: 'hex'): { color: string; percentage: number }[]
   getColors(type: 'buffer'): Uint8ClampedArray
-  getColors(): number[]
+  getColors(): { color: number; percentage: number }[]
 
   /**
    * Find the nearest color on the palette

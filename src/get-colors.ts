@@ -1,18 +1,28 @@
 import type { Context } from './context'
 
 export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
-  if (!type) return context.colorRanges.map(val => val.color)
-
   const { colorRanges } = context
+  const totalWeight = colorRanges.reduce((total, val) => total + val.weight, 0)
 
-  const colors: [number, number, number][] = []
+  if (!type) return context.colorRanges.map(val => {
+    const { color, weight } = val
+    return {
+      color,
+      percentage: weight / totalWeight,
+    }
+  })
+
+  const colors = []
   for (let len = colorRanges.length, i = 0; i < len; i++) {
-    const color = colorRanges[i].color
-    colors.push([
-      color >> 16 & 0xFF,
-      color >> 8 & 0xFF,
-      color & 0xFF,
-    ])
+    const { color, weight } = colorRanges[i]
+    colors.push({
+      color: [
+        color >> 16 & 0xFF,
+        color >> 8 & 0xFF,
+        color & 0xFF,
+      ],
+      percentage: weight / totalWeight,
+    })
   }
 
   let result: any
@@ -21,7 +31,7 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
     result = new Uint8ClampedArray(colors.length * 4)
     for (let len = colors.length, i = 0; i < len; i++) {
       const p = i * 4
-      const rgb = colors[i]
+      const rgb = colors[i].color
       result[p] = rgb[0]
       result[p + 1] = rgb[1]
       result[p + 2] = rgb[2]
@@ -30,11 +40,14 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
   } else if (type === 'hex') {
     result = []
     for (let len = colors.length, i = 0; i < len; i++) {
-      const rgb = colors[i]
-      const r = rgb[0].toString(16).padStart(2, 'f')
-      const g = rgb[1].toString(16).padStart(2, 'f')
-      const b = rgb[2].toString(16).padStart(2, 'f')
-      result.push(`#${ r }${ g }${ b }`)
+      const { color, percentage } = colors[i]
+      const r = color[0].toString(16).padStart(2, 'f')
+      const g = color[1].toString(16).padStart(2, 'f')
+      const b = color[2].toString(16).padStart(2, 'f')
+      result.push({
+        color: `#${ r }${ g }${ b }`,
+        percentage,
+      })
     }
   } else {
     result = colors
