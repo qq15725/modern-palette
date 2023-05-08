@@ -1,5 +1,7 @@
 import { srgbToOklab } from './utils'
-import type { ColorNode, Oklab } from './types'
+import type { Palette } from './palette'
+import type { Context } from './context'
+import type { Oklab } from './types'
 
 function diff(a: Oklab, b: Oklab): number {
   const dL = a[0] - b[0]
@@ -10,8 +12,8 @@ function diff(a: Oklab, b: Oklab): number {
 }
 
 interface CachedColor {
-  color: number
-  colorRangeIndex: number
+  srgb: number
+  colorBoxIndex: number
 }
 
 interface NearestColorNode {
@@ -19,10 +21,14 @@ interface NearestColorNode {
   dist: number
 }
 
-export function createColorFinder(nodes: ColorNode[]) {
+export function createColorFinder(palette: Palette | Context) {
+  const context = 'context' in palette ? palette.context : palette
+
+  const { colorBoxes, colorBoxesIndexTree: tree } = context
+
   function findNearestNode(index: number, target: Oklab, nearest: NearestColorNode) {
-    const node = nodes[index]
-    const current = node.colorRange.oklab
+    const node = tree[index]
+    const current = node.oklab
     const currentToTarget = diff(target, current)
 
     if (currentToTarget < nearest.dist) {
@@ -30,64 +36,56 @@ export function createColorFinder(nodes: ColorNode[]) {
       nearest.dist = currentToTarget
     }
 
-    let nearerKdId: number
-    let furtherKdId: number
+    let nearer: number
+    let further: number
 
     if (node.left !== -1 || node.right !== -1) {
       const dx = target[node.longest] - current[node.longest]
 
       if (dx <= 0) {
-        nearerKdId = node.left
-        furtherKdId = node.right
+        nearer = node.left
+        further = node.right
       } else {
-        nearerKdId = node.right
-        furtherKdId = node.left
+        nearer = node.right
+        further = node.left
       }
 
-      if (nearerKdId !== -1) {
-        findNearestNode(nearerKdId, target, nearest)
+      if (nearer !== -1) {
+        findNearestNode(nearer, target, nearest)
       }
 
-      if (furtherKdId !== -1 && dx * dx < nearest.dist) {
-        findNearestNode(furtherKdId, target, nearest)
+      if (further !== -1 && dx * dx < nearest.dist) {
+        findNearestNode(further, target, nearest)
       }
     }
   }
 
-  function findNearestColorRangeIndex(target: Oklab) {
+  function findNearestColorBoxIndex(target: Oklab) {
     const res: NearestColorNode = {
       dist: Number.MAX_SAFE_INTEGER,
       index: -1,
     }
     findNearestNode(0, target, res)
-    return nodes[res.index]?.colorRangeIndex ?? -1
+    return tree[res.index]?.colorBoxIndex ?? -1
   }
 
-  const cache = new Map<number, CachedColor[]>()
+  const indexesTree = new Map<number, Map<number, CachedColor>>()
 
-  return (color: number) => {
-    const hash = color % 32768
-
-    let cachedColors = cache.get(hash)
-
-    if (cachedColors) {
-      const cachedColorsLength = cachedColors.length
-      for (let i = 0; i < cachedColorsLength; i++) {
-        const cachedColor = cachedColors[i]
-        if (cachedColor.color === color) return cachedColor.colorRangeIndex
-      }
+  return (srgb: number) => {
+    const hash = srgb % 32768
+    let indexes = indexesTree.get(hash)
+    let colorBoxIndex = indexes?.get(srgb)?.colorBoxIndex
+    if (colorBoxIndex !== undefined) {
+      return colorBoxes[colorBoxIndex]
     } else {
-      cachedColors = []
-      cache.set(hash, cachedColors)
+      indexes = new Map()
+      indexesTree.set(hash, indexes)
     }
-
-    const cachedColor: CachedColor = {
-      color,
-      colorRangeIndex: findNearestColorRangeIndex(srgbToOklab(color)),
-    }
-
-    cachedColors.push(cachedColor)
-
-    return cachedColor.colorRangeIndex
+    colorBoxIndex = findNearestColorBoxIndex(srgbToOklab(srgb))
+    indexes.set(srgb, {
+      srgb,
+      colorBoxIndex,
+    })
+    return colorBoxes[colorBoxIndex]
   }
 }

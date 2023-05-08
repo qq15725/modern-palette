@@ -1,4 +1,4 @@
-import type { ColorCounter, Oklab, Sort } from './types'
+import type { ColorSample, Oklab, Sort } from './types'
 
 export const IN_BROWSER = typeof window !== 'undefined'
 
@@ -192,7 +192,7 @@ export function createSorter(sort: Sort) {
   const k01 = map[k1]
   const k02 = map[k2]
 
-  return (a: ColorCounter, b: ColorCounter) => {
+  return (a: ColorSample, b: ColorSample) => {
     return diffSign(a.oklab[k00], b.oklab[k00])
       || (
         diffSign(a.oklab[k01], b.oklab[k01])

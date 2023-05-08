@@ -1,3 +1,4 @@
+export * from './create-color-finder'
 export * from './create-palette'
 export * from './context'
 export * from './palette'

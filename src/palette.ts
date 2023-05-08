@@ -7,12 +7,30 @@ export interface Palette {
    * Add sample color data
    */
   addSample(sample: string): Promise<void>
+  addSample(sample: number[]): void
+  addSample(sample: number[][]): void
   addSample(sample: Uint8ClampedArray): void
 
   /**
    * Generate palette colors from samples
    */
-  generate(): void
+  generate(
+    options?: {
+      /**
+       * Max colors count
+       *
+       * @default 256
+       */
+      maxColors?: number
+
+      /**
+       * Clear samples data
+       *
+       * @default true
+       */
+      clearSamples?: boolean
+    },
+  ): void
 
   /**
    * Get colors on the palette

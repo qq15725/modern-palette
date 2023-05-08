@@ -3,12 +3,13 @@ export type Oklab = [number, number, number]
 
 export type Sort = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
 
-export interface ColorCounter {
+export interface ColorSample {
+  srgb: number
   oklab: Oklab
   count: number
 }
 
-export interface ColorRange {
+export interface ColorBox {
   start: number
   end: number
   length: number
@@ -16,13 +17,13 @@ export interface ColorRange {
   weight: number
   sort: Sort
   sorted: Sort | null
-  color: number
+  srgb: number
   oklab: Oklab
 }
 
 export interface ColorNode {
-  colorRange: ColorRange
-  colorRangeIndex: number
+  oklab: Oklab
+  colorBoxIndex: number
   longest: number
   left: number
   right: number

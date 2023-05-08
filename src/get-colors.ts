@@ -1,25 +1,25 @@
 import type { Context } from './context'
 
 export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
-  const { colorRanges } = context
-  const totalWeight = colorRanges.reduce((total, val) => total + val.weight, 0)
+  const { colorBoxes } = context
+  const totalWeight = colorBoxes.reduce((total, val) => total + val.weight, 0)
 
-  if (!type) return context.colorRanges.map(val => {
-    const { color, weight } = val
+  if (!type) return context.colorBoxes.map(val => {
+    const { srgb, weight } = val
     return {
-      color,
+      color: srgb,
       percentage: weight / totalWeight,
     }
   })
 
   const colors = []
-  for (let len = colorRanges.length, i = 0; i < len; i++) {
-    const { color, weight } = colorRanges[i]
+  for (let len = colorBoxes.length, i = 0; i < len; i++) {
+    const { srgb, weight } = colorBoxes[i]
     colors.push({
       color: [
-        color >> 16 & 0xFF,
-        color >> 8 & 0xFF,
-        color & 0xFF,
+        srgb >> 16 & 0xFF,
+        srgb >> 8 & 0xFF,
+        srgb & 0xFF,
       ],
       percentage: weight / totalWeight,
     })

@@ -4,12 +4,14 @@ export function findNearestColor(
   context: Context,
   color: string | number | [number, number, number],
 ) {
-  const { colorRanges, finder } = context
+  const { finder } = context
 
   if (!finder) return undefined
 
   let target: number
-  if (typeof color === 'string') {
+  if (typeof color === 'number') {
+    target = color
+  } else if (typeof color === 'string') {
     const str = color.replace(/^#/, '')
     const arr = [
       `${ str[0] }${ str[1] }`,
@@ -17,26 +19,30 @@ export function findNearestColor(
       `${ str[4] }${ str[5] }`,
     ].map(val => parseInt(val, 16))
     target = (arr[0] << 16) | (arr[1] << 8) | arr[2]
-  } else if (typeof color === 'object' && Array.isArray(color)) {
+  } else if (Array.isArray(color)) {
     target = (color[0] << 16) | (color[1] << 8) | color[2]
   } else {
-    target = color
+    throw new TypeError('Unsupported color format')
   }
 
-  const result = colorRanges[finder(target)].color
+  const colorBox = finder(target)
+
+  if (!colorBox) return undefined
+
+  const { srgb } = colorBox
 
   if (typeof color === 'string') {
-    const r = (result >> 16 & 0xFF).toString(16).padStart(2, 'f')
-    const g = (result >> 8 & 0xFF).toString(16).padStart(2, 'f')
-    const b = (result & 0xFF).toString(16).padStart(2, 'f')
+    const r = (srgb >> 16 & 0xFF).toString(16).padStart(2, 'f')
+    const g = (srgb >> 8 & 0xFF).toString(16).padStart(2, 'f')
+    const b = (srgb & 0xFF).toString(16).padStart(2, 'f')
     return `#${ r }${ g }${ b }`
   } else if (typeof color === 'object' && Array.isArray(color)) {
     return [
-      result >> 16 & 0xFF,
-      result >> 8 & 0xFF,
-      result & 0xFF,
+      srgb >> 16 & 0xFF,
+      srgb >> 8 & 0xFF,
+      srgb & 0xFF,
     ] as any
   }
 
-  return result
+  return srgb
 }
