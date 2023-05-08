@@ -9,7 +9,7 @@ interface AddSampleOptions {
 
 export function addSample(
   context: Context,
-  source: string | number[] | number[][] | BufferSource,
+  source: string | HTMLImageElement | number[] | number[][] | BufferSource,
   options: AddSampleOptions,
 ): Uint8ClampedArray | undefined | Promise<Uint8ClampedArray | undefined> {
   const {
@@ -36,6 +36,16 @@ export function addSample(
         options,
       )
     })
+  } else if (source instanceof HTMLImageElement) {
+    if (!context2d) return
+    context2d.canvas.width = source.width
+    context2d.canvas.height = source.height
+    context2d.drawImage(source, 0, 0)
+    return addSample(
+      context,
+      context2d.getImageData(0, 0, source.width, source.height).data,
+      options,
+    )
   } else if (Array.isArray(source)) {
     if (Array.isArray(source[0])) {
       const array = []
@@ -44,7 +54,7 @@ export function addSample(
           (source as any)[i][0] ?? 0,
           (source as any)[i][1] ?? 0,
           (source as any)[i][2] ?? 0,
-          (source as any)[i][3] ?? 0,
+          (source as any)[i][3] ?? 255,
         )
       }
       sample = new Uint8ClampedArray(array)

@@ -35,15 +35,21 @@ const palette = createPalette({
 
 // Add sample color data
 await palette.addSample('/example.jpg')
+// palette.addSample(document.querySelector('img'))
+// palette.addSample([255, 255, 255, 255, 0, 0, 0, 255])
+// palette.addSample([[255, 255, 255, 255], [255, 0, 0, 255])
 
 // Generate palette colors from samples
 palette.generate()
 
 // Find the nearest color on the palette
 // palette.findNearestColor('#000000')
+// palette.findNearestColor([255, 255, 255])
 
 // Get colors on the palette
 const colors = palette.getColors('hex')
+// palette.getColors('rgb')
+// palette.getColors('buffer')
 
 console.log(colors)
 ```
@@ -51,3 +57,7 @@ console.log(colors)
 ## Options
 
 See the [options.ts](src/options.ts)
+
+## Palette
+
+See the [palette.ts](src/palette.ts)

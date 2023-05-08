@@ -6,10 +6,11 @@ export interface Palette {
   /**
    * Add sample color data
    */
-  addSample(sample: string): Promise<void>
-  addSample(sample: number[]): void
-  addSample(sample: number[][]): void
-  addSample(sample: Uint8ClampedArray): void
+  addSample(sample: string): Promise<Uint8ClampedArray | undefined>
+  addSample(sample: HTMLImageElement): Uint8ClampedArray | undefined
+  addSample(sample: number[]): Uint8ClampedArray | undefined
+  addSample(sample: number[][]): Uint8ClampedArray | undefined
+  addSample(sample: Uint8ClampedArray): Uint8ClampedArray | undefined
 
   /**
    * Generate palette colors from samples
