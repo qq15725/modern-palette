@@ -30,7 +30,7 @@ npm i modern-palette
 import { createPalette } from 'modern-palette'
 
 const palette = createPalette({
-  maxColors: 400,
+  maxColors: 256, // 8-bit color
 })
 
 // Add sample color data
