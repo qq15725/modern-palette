@@ -11,6 +11,7 @@ export function createPalette(options: Options = {}): Palette {
   const {
     maxColors = 256,
     statsMode = 'full',
+    samples,
   } = options
 
   const context = createContext()
@@ -21,7 +22,7 @@ export function createPalette(options: Options = {}): Palette {
   const context2d = canvas?.getContext('2d') ?? null
   let previousSample: Uint8ClampedArray | null = null
 
-  return {
+  const palette = {
     context,
     addSample: sample => {
       const result = addSample(context, sample, {
@@ -42,8 +43,18 @@ export function createPalette(options: Options = {}): Palette {
 
       return result
     },
-    generate: options => generate(context, { maxColors, ...options }),
+    generate(options) {
+      generate(context, { maxColors, ...options })
+      return this
+    },
     getColors: type => getColors(context, type),
     findNearestColor: color => findNearestColor(context, color),
   } as Palette
+
+  if (samples) {
+    samples.forEach((sample: any) => palette.addSample(sample))
+    palette.generate()
+  }
+
+  return palette
 }

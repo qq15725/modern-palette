@@ -31,20 +31,14 @@ import { createPalette } from 'modern-palette'
 
 const palette = createPalette({
   maxColors: 256, // 8-bit color
+  samples: [
+    // HTMLImageElement
+    document.querySelector('img'),
+    // or rgb[]
+    [[255, 0, 0], [255, 0, 0]],
+    // or BufferSource
+  ],
 })
-
-// Add sample color data
-await palette.addSample('/example.jpg')
-// palette.addSample(document.querySelector('img'))
-// palette.addSample([255, 255, 255, 255, 0, 0, 0, 255])
-// palette.addSample([[255, 255, 255, 255], [255, 0, 0, 255])
-
-// Generate palette colors from samples
-palette.generate()
-
-// Find the nearest color on the palette
-// palette.findNearestColor('#000000')
-// palette.findNearestColor([255, 255, 255])
 
 // Get colors on the palette
 const colors = palette.getColors('hex')
@@ -52,6 +46,14 @@ const colors = palette.getColors('hex')
 // palette.getColors('buffer')
 
 console.log(colors)
+// [ { color: '#f1f110', percentage: 0.002063296404512621 }, ... ]
+
+// Find the nearest color on the palette
+const nearestColor = palette.findNearestColor('#ffffff')
+// palette.findNearestColor([255, 255, 255])
+
+console.log(nearestColor)
+// { color: '#fbfbf6', index: 241 }
 ```
 
 ## Options

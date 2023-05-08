@@ -1,7 +1,7 @@
 import { srgbToOklab } from './utils'
+import type { FindedColorBox, Oklab } from './types'
 import type { Palette } from './palette'
 import type { Context } from './context'
-import type { Oklab } from './types'
 
 function diff(a: Oklab, b: Oklab): number {
   const dL = a[0] - b[0]
@@ -9,11 +9,6 @@ function diff(a: Oklab, b: Oklab): number {
   const db = a[2] - b[2]
   const ret = dL * dL + da * da + db * db
   return Math.min(ret, 0xFFFFFFFF - 1)
-}
-
-interface CachedColor {
-  srgb: number
-  colorBoxIndex: number
 }
 
 interface NearestColorNode {
@@ -69,23 +64,21 @@ export function createColorFinder(palette: Palette | Context) {
     return tree[res.index]?.colorBoxIndex ?? -1
   }
 
-  const indexesTree = new Map<number, Map<number, CachedColor>>()
+  const cache = new Map<number, Map<number, FindedColorBox>>()
 
   return (srgb: number) => {
     const hash = srgb % 32768
-    let indexes = indexesTree.get(hash)
-    let colorBoxIndex = indexes?.get(srgb)?.colorBoxIndex
-    if (colorBoxIndex !== undefined) {
-      return colorBoxes[colorBoxIndex]
-    } else {
-      indexes = new Map()
-      indexesTree.set(hash, indexes)
+    let map = cache.get(hash)
+    const colorBox = map?.get(srgb)
+    if (colorBox) return colorBox
+    map = new Map()
+    cache.set(hash, map)
+    const index = findNearestColorBoxIndex(srgbToOklab(srgb))
+    const result = {
+      ...colorBoxes[index],
+      index,
     }
-    colorBoxIndex = findNearestColorBoxIndex(srgbToOklab(srgb))
-    indexes.set(srgb, {
-      srgb,
-      colorBoxIndex,
-    })
-    return colorBoxes[colorBoxIndex]
+    map.set(srgb, result)
+    return result
   }
 }

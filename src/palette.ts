@@ -10,7 +10,7 @@ export interface Palette {
   addSample(sample: HTMLImageElement): Uint8ClampedArray | undefined
   addSample(sample: number[]): Uint8ClampedArray | undefined
   addSample(sample: number[][]): Uint8ClampedArray | undefined
-  addSample(sample: Uint8ClampedArray): Uint8ClampedArray | undefined
+  addSample(sample: BufferSource): Uint8ClampedArray | undefined
 
   /**
    * Generate palette colors from samples
@@ -31,20 +31,20 @@ export interface Palette {
        */
       clearSamples?: boolean
     },
-  ): void
+  ): this
 
   /**
    * Get colors on the palette
    */
-  getColors(type: 'rgb'): { color: [number, number, number]; percentage: number }[]
-  getColors(type: 'hex'): { color: string; percentage: number }[]
-  getColors(type: 'buffer'): Uint8ClampedArray
+  getColors(format: 'rgb'): { color: [number, number, number]; percentage: number }[]
+  getColors(format: 'hex'): { color: string; percentage: number }[]
+  getColors(format: 'buffer'): Uint8ClampedArray
   getColors(): { color: number; percentage: number }[]
 
   /**
    * Find the nearest color on the palette
    */
-  findNearestColor(color: [number, number, number]): [number, number, number] | undefined
-  findNearestColor(color: string): string | undefined
-  findNearestColor(color: number): number | undefined
+  findNearestColor(color: [number, number, number]): { color: [number, number, number]; index: number } | undefined
+  findNearestColor(color: string): { color: string; index: number } | undefined
+  findNearestColor(color: number): { color: number; index: number } | undefined
 }

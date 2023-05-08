@@ -12,4 +12,9 @@ export interface Options {
    * @default 'full'
    */
   statsMode?: 'diff' | 'full'
+
+  /**
+   * Samples color data
+   */
+  samples?: (HTMLImageElement | number[] | number[][] | BufferSource)[]
 }

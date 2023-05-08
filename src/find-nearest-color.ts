@@ -29,20 +29,29 @@ export function findNearestColor(
 
   if (!colorBox) return undefined
 
-  const { srgb } = colorBox
+  const { srgb, index } = colorBox
 
   if (typeof color === 'string') {
     const r = (srgb >> 16 & 0xFF).toString(16).padStart(2, 'f')
     const g = (srgb >> 8 & 0xFF).toString(16).padStart(2, 'f')
     const b = (srgb & 0xFF).toString(16).padStart(2, 'f')
-    return `#${ r }${ g }${ b }`
+    return {
+      color: `#${ r }${ g }${ b }`,
+      index,
+    }
   } else if (typeof color === 'object' && Array.isArray(color)) {
-    return [
-      srgb >> 16 & 0xFF,
-      srgb >> 8 & 0xFF,
-      srgb & 0xFF,
-    ] as any
+    return {
+      color: [
+        srgb >> 16 & 0xFF,
+        srgb >> 8 & 0xFF,
+        srgb & 0xFF,
+      ] as any,
+      index,
+    }
   }
 
-  return srgb
+  return {
+    color: srgb,
+    index,
+  }
 }
