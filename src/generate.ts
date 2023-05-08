@@ -42,7 +42,7 @@ export function generate(
       end: box.end,
       sorted: box.sorted,
     }, context)
-    box.end -= (newBox.end - newBox.start)
+    box.end -= newBox.length
     setupColorBox(box, context)
     colorBoxes.push(newBox)
     boxesCount++
@@ -60,7 +60,7 @@ export function generate(
       box.sorted = sort
     }
 
-    let index = -1
+    let index = start
     const median = (weight + 1) >> 1
     for (let weight = 0, len = end - 2, i = start; i < len; i++) {
       weight += colorSamples[i].count
