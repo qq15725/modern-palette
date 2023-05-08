@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/qq15725/modern-palette/compare/v0.1.3...v0.1.4) (2023-05-08)
+
+
+### Performance Improvements
+
+* high-performance createColorFinder ([c99802e](https://github.com/qq15725/modern-palette/commit/c99802ee9eddb49eac41716981df24b14e4a8aa0))
+
+
+
 ## [0.1.3](https://github.com/qq15725/modern-palette/compare/v0.1.2...v0.1.3) (2023-05-08)
 
 
