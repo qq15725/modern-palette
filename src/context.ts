@@ -1,4 +1,4 @@
-import type { ColorBox, ColorNode, ColorSample, FindedColorBox } from './types'
+import type { ColorBox, ColorNode, ColorSample } from './types'
 
 export interface Context {
   /**
@@ -16,5 +16,5 @@ export interface Context {
   /**
    * Paletteuse
    */
-  finder?: (srgb: number) => FindedColorBox | undefined
+  finder?: (srgb: number) => number | undefined
 }

@@ -21,10 +21,6 @@ export interface ColorBox {
   oklab: Oklab
 }
 
-export interface FindedColorBox extends ColorBox {
-  index: number
-}
-
 export interface ColorNode {
   oklab: Oklab
   colorBoxIndex: number

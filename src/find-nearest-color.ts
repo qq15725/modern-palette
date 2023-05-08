@@ -4,7 +4,7 @@ export function findNearestColor(
   context: Context,
   color: string | number | [number, number, number],
 ) {
-  const { finder } = context
+  const { finder, colorBoxes } = context
 
   if (!finder) return undefined
 
@@ -25,11 +25,13 @@ export function findNearestColor(
     throw new TypeError('Unsupported color format')
   }
 
-  const colorBox = finder(target)
+  const index = finder(target)
+  if (index === undefined) return undefined
 
+  const colorBox = colorBoxes[index]
   if (!colorBox) return undefined
 
-  const { srgb, index } = colorBox
+  const { srgb } = colorBox
 
   if (typeof color === 'string') {
     const r = (srgb >> 16 & 0xFF).toString(16).padStart(2, 'f')
