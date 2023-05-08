@@ -4,6 +4,7 @@ import { addSample } from './add-sample'
 import { generate } from './generate'
 import { findNearestColor } from './find-nearest-color'
 import { IN_BROWSER } from './utils'
+import { reset } from './reset'
 import type { Palette } from './palette'
 import type { Options } from './options'
 
@@ -25,6 +26,10 @@ export function createPalette(options: Options = {}): Palette {
   const palette = {
     context,
     addSample: sample => {
+      if (context.colorSamples.length === 0) {
+        previousSample = null
+      }
+
       const result = addSample(context, sample, {
         mode: statsMode,
         context2d,
@@ -49,6 +54,7 @@ export function createPalette(options: Options = {}): Palette {
     },
     getColors: type => getColors(context, type),
     findNearestColor: color => findNearestColor(context, color),
+    reset: () => reset(context),
   } as Palette
 
   if (samples) {

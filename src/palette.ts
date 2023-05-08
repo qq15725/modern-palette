@@ -47,4 +47,9 @@ export interface Palette {
   findNearestColor(color: [number, number, number]): { color: [number, number, number]; index: number } | undefined
   findNearestColor(color: string): { color: string; index: number } | undefined
   findNearestColor(color: number): { color: number; index: number } | undefined
+
+  /**
+   * Reset palette
+   */
+  reset(): void
 }
