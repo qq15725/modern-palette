@@ -1,3 +1,12 @@
+## [0.1.1](https://github.com/qq15725/modern-palette/compare/v0.1.0...v0.1.1) (2023-05-08)
+
+
+### Features
+
+* adjust the return format of nearest color ([32808a8](https://github.com/qq15725/modern-palette/commit/32808a8bf90cf85a289693b7101a9d1fce9835c0))
+
+
+
 # [0.1.0](https://github.com/qq15725/modern-palette/compare/v0.0.3...v0.1.0) (2023-05-08)
 
 
