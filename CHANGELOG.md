@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/qq15725/modern-palette/compare/v0.1.1...v0.1.2) (2023-05-08)
+
+
+### Features
+
+* palette reset ([02fb571](https://github.com/qq15725/modern-palette/commit/02fb571a5aa8c5dba77561e873ab2f0d119f6bec))
+
+
+
 ## [0.1.1](https://github.com/qq15725/modern-palette/compare/v0.1.0...v0.1.1) (2023-05-08)
 
 
