@@ -52,14 +52,11 @@ export function generate(
     const { start, end, weight, sort, sorted } = box
 
     if (sort !== sorted) {
-      const subCounters = colorSamples
-        .slice(start, end)
-        .sort(createSorter(sort))
-
-      for (let len = subCounters.length, i = 0; i < len; i++) {
-        colorSamples[start + i] = subCounters[i]
+      // A lot of time is spent here
+      const array = colorSamples.slice(start, end).sort(createSorter(sort))
+      for (let len = array.length, i = 0; i < len; i++) {
+        colorSamples[start + i] = array[i]
       }
-
       box.sorted = sort
     }
 
