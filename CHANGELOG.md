@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/qq15725/modern-palette/compare/v0.1.2...v0.1.3) (2023-05-08)
+
+
+### Bug Fixes
+
+* bug ([ae2f0d6](https://github.com/qq15725/modern-palette/commit/ae2f0d609ddd37db9bcf704510db94a1418b983f))
+
+
+
 ## [0.1.2](https://github.com/qq15725/modern-palette/compare/v0.1.1...v0.1.2) (2023-05-08)
 
 
