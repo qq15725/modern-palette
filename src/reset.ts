@@ -5,5 +5,4 @@ export function reset(context: Context) {
   context.colorSamplesIndexTree = new Map()
   context.colorBoxes = []
   context.colorBoxesIndexTree = []
-  context.finder = undefined
 }
