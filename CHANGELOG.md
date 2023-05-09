@@ -1,3 +1,12 @@
+## [0.1.5](https://github.com/qq15725/modern-palette/compare/v0.1.4...v0.1.5) (2023-05-09)
+
+
+### Features
+
+* support web worker ([ccdd17c](https://github.com/qq15725/modern-palette/commit/ccdd17c2501ac176d30c785edabf9ef2ceb38379))
+
+
+
 ## [0.1.4](https://github.com/qq15725/modern-palette/compare/v0.1.3...v0.1.4) (2023-05-08)
 
 
