@@ -1,6 +1,7 @@
 import type { ColorSample, Oklab, Sort } from './types'
 
 export const IN_BROWSER = typeof window !== 'undefined'
+export const isImageElement = (node: any): node is HTMLImageElement => node && typeof node === 'object' && node.nodeType === 1 && node.tagName === 'IMG'
 
 const K = (1 << 16) - 1
 const K2 = K * K

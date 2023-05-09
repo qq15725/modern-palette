@@ -1,4 +1,4 @@
-import { loadImage, srgbToOklab } from './utils'
+import { isImageElement, loadImage, srgbToOklab } from './utils'
 import type { Context } from './context'
 
 interface AddSampleOptions {
@@ -35,7 +35,7 @@ export function addSample(
         options,
       )
     })
-  } else if (source instanceof HTMLImageElement) {
+  } else if (isImageElement(source)) {
     if (!context2d) return
     context2d.canvas.width = source.width
     context2d.canvas.height = source.height

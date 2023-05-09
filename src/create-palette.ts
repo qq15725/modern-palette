@@ -10,7 +10,7 @@ import type { Context } from './context'
 import type { Palette } from './palette'
 import type { Options } from './options'
 
-export function createPalette(options: Options | Context): Palette {
+export function createPalette(options?: Options | Context): Palette {
   const context = orCreateContext(options)
 
   const {
