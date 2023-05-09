@@ -1,3 +1,12 @@
+## [0.1.8](https://github.com/qq15725/modern-palette/compare/v0.1.7...v0.1.8) (2023-05-09)
+
+
+### Bug Fixes
+
+* samples option ([fd108ef](https://github.com/qq15725/modern-palette/commit/fd108ef300cd18b893efb42d31453a75d9cca038))
+
+
+
 ## [0.1.7](https://github.com/qq15725/modern-palette/compare/v0.1.6...v0.1.7) (2023-05-09)
 
 
