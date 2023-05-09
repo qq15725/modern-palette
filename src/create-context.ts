@@ -1,8 +1,8 @@
 import type { Options } from './options'
 import type { Context } from './context'
 
-export function isContext(value: any): boolean {
-  return value && '__CONTEXT__' in value
+export function isContext(value: any): value is Context {
+  return value && typeof value === 'object' && '__CONTEXT__' in value
 }
 
 export function orCreateContext(context: Context): Context

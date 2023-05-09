@@ -67,7 +67,7 @@ export function createPalette(options?: Options | Context): Palette {
     reset: () => reset(context),
   } as Palette
 
-  if (samples) {
+  if (samples.length) {
     samples.forEach((sample: any) => palette.addSample(sample))
     context.samples = []
     palette.generate()

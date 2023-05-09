@@ -1,4 +1,5 @@
 import { srgbToOklab } from './utils'
+import { isContext } from './create-context'
 import type { Oklab } from './types'
 import type { Palette } from './palette'
 import type { Context } from './context'
@@ -17,7 +18,7 @@ interface NearestColorNode {
 }
 
 export function createColorFinder(palette: Palette | Context) {
-  const context = 'context' in palette ? palette.context : palette
+  const context = isContext(palette) ? palette : palette.context
 
   const { colorBoxesIndexTree: tree } = context
 
