@@ -1,7 +1,7 @@
 {
   "name": "modern-palette",
   "type": "module",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "packageManager": "pnpm@8.4.0",
   "description": "Generate and use color palette through images or color data",
   "author": "wxm",
