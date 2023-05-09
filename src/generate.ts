@@ -2,7 +2,6 @@ import { createColorBox } from './create-color-box'
 import { setupColorBox } from './setup-color-box'
 import { createSorter, oklabToSrgb } from './utils'
 import { createColorBoxesIndexTree } from './create-color-boxes-index-tree'
-import { createColorFinder } from './create-color-finder'
 import type { Palette } from './palette'
 import type { ColorBox } from './types'
 import type { Context } from './context'
@@ -12,11 +11,14 @@ export function generate(
   options: Parameters<Palette['generate']>[0] = {},
 ) {
   const {
-    maxColors = 256,
+    maxColors: contextMaxColors,
+    colorSamples,
+  } = context
+
+  const {
+    maxColors = contextMaxColors,
     clearSamples = true,
   } = options
-
-  const { colorSamples } = context
 
   let box: ColorBox | null = createColorBox({ end: colorSamples.length }, context)
   let boxesCount = 1
@@ -82,7 +84,6 @@ export function generate(
   context.colorBoxes = colorBoxes
     .sort((a, b) => a.srgb - b.srgb)
   context.colorBoxesIndexTree = createColorBoxesIndexTree(context)
-  context.finder = createColorFinder(context)
 
   if (clearSamples) {
     context.colorSamples = []

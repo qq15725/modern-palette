@@ -1,6 +1,9 @@
+import type { Options } from './options'
 import type { ColorBox, ColorNode, ColorSample } from './types'
 
-export interface Context {
+export interface Context extends Required<Options> {
+  __CONTEXT__: true
+
   /**
    * Palette sampling
    */
@@ -12,9 +15,4 @@ export interface Context {
    */
   colorBoxes: ColorBox[]
   colorBoxesIndexTree: ColorNode[]
-
-  /**
-   * Paletteuse
-   */
-  finder?: (srgb: number) => number | undefined
 }

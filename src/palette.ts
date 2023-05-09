@@ -3,6 +3,9 @@ import type { Context } from './context'
 export interface Palette {
   context: Context
 
+  setMaxColors(value: number): this
+  setStatsMode(value: 'diff' | 'full'): this
+
   /**
    * Add sample color data
    */

@@ -2,9 +2,10 @@ import type { Context } from './context'
 
 export function findNearestColor(
   context: Context,
+  finder: ((srgb: number) => number | undefined) | null,
   color: string | number | [number, number, number],
 ) {
-  const { finder, colorBoxes } = context
+  const { colorBoxes } = context
 
   if (!finder) return undefined
 

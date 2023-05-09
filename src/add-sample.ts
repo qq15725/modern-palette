@@ -2,7 +2,6 @@ import { loadImage, srgbToOklab } from './utils'
 import type { Context } from './context'
 
 interface AddSampleOptions {
-  mode?: 'diff' | 'full'
   context2d?: CanvasRenderingContext2D | null
   previousSample?: Uint8ClampedArray | null
 }
@@ -13,12 +12,12 @@ export function addSample(
   options: AddSampleOptions,
 ): Uint8ClampedArray | undefined | Promise<Uint8ClampedArray | undefined> {
   const {
-    mode = 'full',
     context2d,
     previousSample,
   } = options
 
   const {
+    statsMode: mode,
     colorSamples,
     colorSamplesIndexTree,
   } = context

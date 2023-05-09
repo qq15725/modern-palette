@@ -3,7 +3,7 @@ import type { Context } from './context'
 import type { ColorBox } from './types'
 
 export function createColorBox(options: Partial<ColorBox>, context: Context): ColorBox {
-  const ColorBox = {
+  const colorBox = {
     start: 0,
     end: 0,
     length: 0,
@@ -16,7 +16,7 @@ export function createColorBox(options: Partial<ColorBox>, context: Context): Co
     ...options,
   } as ColorBox
 
-  setupColorBox(ColorBox, context)
+  setupColorBox(colorBox, context)
 
-  return ColorBox
+  return colorBox
 }
