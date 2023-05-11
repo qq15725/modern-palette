@@ -17,8 +17,8 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
     const { srgb, weight } = colorBoxes[i]
     colors.push({
       color: [
-        srgb >> 16 & 0xFF,
-        srgb >> 8 & 0xFF,
+        (srgb >> 16) & 0xFF,
+        (srgb >> 8) & 0xFF,
         srgb & 0xFF,
       ],
       percentage: weight / totalWeight,
@@ -41,9 +41,9 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
     result = []
     for (let len = colors.length, i = 0; i < len; i++) {
       const { color, percentage } = colors[i]
-      const r = color[0].toString(16).padStart(2, 'f')
-      const g = color[1].toString(16).padStart(2, 'f')
-      const b = color[2].toString(16).padStart(2, 'f')
+      const r = color[0].toString(16).padStart(2, '0')
+      const g = color[1].toString(16).padStart(2, '0')
+      const b = color[2].toString(16).padStart(2, '0')
       result.push({
         color: `#${ r }${ g }${ b }`,
         percentage,

@@ -51,7 +51,7 @@ export function generate(
   }
 
   while (box && box.length > 1) {
-    const { start, end, weight, sort, sorted } = box
+    const { start, end, sort, sorted } = box
 
     if (sort !== sorted) {
       // A lot of time is spent here
@@ -62,15 +62,14 @@ export function generate(
       box.sorted = sort
     }
 
+    const median = (box.weight + 1) >> 1
     let index = start
-    const median = (weight + 1) >> 1
-    for (let weight = 0, len = end - 2, i = start; i < len; i++) {
-      weight += colorSamples[i].count
-      if (weight > median) {
-        index = i
-        break
-      }
+    let weight = 0
+    for (let len = end - 2; index < len; index++) {
+      weight += colorSamples[index].count
+      if (weight > median) break
     }
+
     split(box, index)
 
     const nextIndex = getNextIndex()
@@ -87,6 +86,8 @@ export function generate(
 
   if (clearSamples) {
     context.colorSamples = []
-    context.colorSamplesIndexTree.clear()
+    context.colorSamplesCache.clear()
   }
+
+  context.finderCache.clear()
 }

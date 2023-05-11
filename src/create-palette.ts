@@ -18,30 +18,31 @@ export function createPalette(options?: Options | Context): Palette {
     samples,
   } = context
 
-  const canvas = IN_BROWSER
-    ? document.createElement('canvas')
-    : null
-  const context2d = canvas?.getContext('2d') ?? null
+  const getContext2d = (function () {
+    let context2d: CanvasRenderingContext2D | null | undefined
+    return () => {
+      if (!context2d && IN_BROWSER) {
+        context2d = document.createElement('canvas')
+          .getContext('2d', {
+            willReadFrequently: true,
+          })
+      }
+      return context2d
+    }
+  }())
+
   let previousSample: Uint8ClampedArray | null = null
   let finder: ((srgb: number) => number | undefined) | null = null
 
   const palette = {
     context,
-    setMaxColors(value: number) {
-      context.maxColors = value
-      return this
-    },
-    setStatsMode(value: 'diff' | 'full') {
-      context.statsMode = value
-      return this
-    },
     addSample: sample => {
       if (context.colorSamples.length === 0) {
         previousSample = null
       }
 
       const result = addSample(context, sample, {
-        context2d,
+        getContext2d,
         previousSample,
       })
 
@@ -59,11 +60,13 @@ export function createPalette(options?: Options | Context): Palette {
     },
     generate(options) {
       generate(context, options)
-      finder = createColorFinder(context)
       return this
     },
     getColors: type => getColors(context, type),
-    findNearestColor: color => findNearestColor(context, finder, color),
+    findNearestColor: color => {
+      if (!finder) finder = createColorFinder(context)
+      return findNearestColor(context, finder, color)
+    },
     reset: () => reset(context),
   } as Palette
 

@@ -35,9 +35,9 @@ export function findNearestColor(
   const { srgb } = colorBox
 
   if (typeof color === 'string') {
-    const r = (srgb >> 16 & 0xFF).toString(16).padStart(2, 'f')
-    const g = (srgb >> 8 & 0xFF).toString(16).padStart(2, 'f')
-    const b = (srgb & 0xFF).toString(16).padStart(2, 'f')
+    const r = (srgb >> 16 & 0xFF).toString(16).padStart(2, '0')
+    const g = (srgb >> 8 & 0xFF).toString(16).padStart(2, '0')
+    const b = (srgb & 0xFF).toString(16).padStart(2, '0')
     return {
       color: `#${ r }${ g }${ b }`,
       index,

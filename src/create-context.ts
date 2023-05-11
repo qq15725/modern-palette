@@ -24,8 +24,9 @@ export function createContext(options: Options = {}): Context {
     maxColors,
     statsMode,
     colorSamples: [],
-    colorSamplesIndexTree: new Map(),
+    colorSamplesCache: new Map(),
     colorBoxes: [],
     colorBoxesIndexTree: [],
+    finderCache: new Map(),
   }
 }

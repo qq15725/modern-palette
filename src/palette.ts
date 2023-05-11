@@ -3,17 +3,11 @@ import type { Context } from './context'
 export interface Palette {
   context: Context
 
-  setMaxColors(value: number): this
-  setStatsMode(value: 'diff' | 'full'): this
-
   /**
    * Add sample color data
    */
   addSample(sample: string): Promise<Uint8ClampedArray | undefined>
-  addSample(sample: HTMLImageElement): Uint8ClampedArray | undefined
-  addSample(sample: number[]): Uint8ClampedArray | undefined
-  addSample(sample: number[][]): Uint8ClampedArray | undefined
-  addSample(sample: BufferSource): Uint8ClampedArray | undefined
+  addSample(sample: number[] | number[][] | CanvasImageSource | BufferSource): Uint8ClampedArray | undefined
 
   /**
    * Generate palette colors from samples

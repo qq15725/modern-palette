@@ -1,7 +1,6 @@
 import type { ColorSample, Oklab, Sort } from './types'
 
 export const IN_BROWSER = typeof window !== 'undefined'
-export const isImageElement = (node: any): node is HTMLImageElement => node && typeof node === 'object' && node.nodeType === 1 && node.tagName === 'IMG'
 
 const K = (1 << 16) - 1
 const K2 = K * K
@@ -169,19 +168,15 @@ export function oklabToSrgb(oklab: Oklab): number {
   const m_ = oklab[0] + divRound64(-6918 * oklab[1], K) + divRound64(-4185 * oklab[2], K)
   const s_ = oklab[0] + divRound64(-5864 * oklab[1], K) + divRound64(-84638 * oklab[2], K)
 
-  const l = l_ * l_ * l_ / K2
-  const m = m_ * m_ * m_ / K2
-  const s = s_ * s_ * s_ / K2
+  const l = l_ ** 2 * l_ / K2
+  const m = m_ ** 2 * m_ / K2
+  const s = s_ ** 2 * s_ / K2
 
   const r = linearIntToSrgbU8((267169 * l + -216771 * m + 15137 * s + K / 2) / K)
   const g = linearIntToSrgbU8((-83127 * l + 171030 * m + -22368 * s + K / 2) / K)
   const b = linearIntToSrgbU8((-275 * l + -46099 * m + 111909 * s + K / 2) / K)
 
   return r << 16 | g << 8 | b
-}
-
-export function diffSign(a: number, b: number) {
-  return a > b ? 1 : a < b ? -1 : 0
 }
 
 export function createSorter(sort: Sort) {
@@ -194,11 +189,9 @@ export function createSorter(sort: Sort) {
   const k02 = map[k2]
 
   return (a: ColorSample, b: ColorSample) => {
-    return diffSign(a.oklab[k00], b.oklab[k00])
-      || (
-        diffSign(a.oklab[k01], b.oklab[k01])
-        || diffSign(a.oklab[k02], b.oklab[k02])
-      )
+    return (a.oklab[k00] - b.oklab[k00])
+      || (a.oklab[k01] - b.oklab[k01])
+      || (a.oklab[k02] - b.oklab[k02])
   }
 }
 

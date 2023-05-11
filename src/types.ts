@@ -4,6 +4,7 @@ export type Oklab = [number, number, number]
 export type Sort = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
 
 export interface ColorSample {
+  alpha: number
   srgb: number
   oklab: Oklab
   count: number
