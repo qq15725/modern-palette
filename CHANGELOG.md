@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/qq15725/modern-palette/compare/v0.1.8...v0.2.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* transparent pixels should not be skipped ([a4ad1c1](https://github.com/qq15725/modern-palette/commit/a4ad1c10132053aef60360244f406ad161ef637c))
+
+
+
 ## [0.1.8](https://github.com/qq15725/modern-palette/compare/v0.1.7...v0.1.8) (2023-05-09)
 
 
