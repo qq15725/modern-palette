@@ -30,13 +30,11 @@ npm i modern-palette
 import { createPalette } from 'modern-palette'
 
 const palette = createPalette({
-  maxColors: 256, // 8-bit color
+  maxColors: 256,
+  // (number[] | number[][] | CanvasImageSource | BufferSource)[]
   samples: [
-    // HTMLImageElement
     document.querySelector('img'),
-    // or rgb[]
     [[255, 0, 0], [255, 0, 0]],
-    // or BufferSource
   ],
 })
 

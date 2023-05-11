@@ -16,5 +16,5 @@ export interface Options {
   /**
    * Samples color data
    */
-  samples?: (HTMLImageElement | number[] | number[][] | BufferSource)[]
+  samples?: (number[] | number[][] | CanvasImageSource | BufferSource)[]
 }
