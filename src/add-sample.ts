@@ -91,20 +91,28 @@ export function addSample(
     }
 
     const srgb = (r << 16) | (g << 8) | b
-    const key = a * 100000000 + srgb
+    const argb = a * 100000000 + srgb
+    const key = argb % 32768
 
-    let index = colorSamplesCache.get(key)
+    let map = colorSamplesCache.get(key)
+    if (!map) {
+      map = new Map()
+      colorSamplesCache.set(key, map)
+    }
+
+    let index = map.get(argb)
     if (index !== undefined) {
       colorSamples[index]!.count++
       continue
     }
+
     index = colorSamples.push({
       alpha: a,
       srgb,
       oklab: srgbToOklab(srgb),
       count: 1,
     }) - 1
-    colorSamplesCache.set(key, index)
+    map.set(argb, index)
   }
 
   return sample

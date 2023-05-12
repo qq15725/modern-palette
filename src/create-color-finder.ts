@@ -68,10 +68,20 @@ export function createColorFinder(palette: Palette | Context) {
   }
 
   return (srgb: number) => {
-    let index = finderCache.get(srgb)
+    const key = srgb % 32768
+
+    let map = finderCache.get(key)
+    if (!map) {
+      map = new Map()
+      finderCache.set(key, map)
+    }
+
+    let index = map.get(srgb)
     if (index !== undefined) return index
+
     index = findNearestColorBoxIndex(srgbToOklab(srgb))
-    finderCache.set(srgb, index)
+    map.set(srgb, index)
+
     return index
   }
 }

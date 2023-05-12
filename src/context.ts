@@ -8,7 +8,7 @@ export interface Context extends Required<Options> {
    * Palette sampling
    */
   colorSamples: ColorSample[]
-  colorSamplesCache: Map<number, number>
+  colorSamplesCache: Map<number, Map<number, number>>
 
   /**
    * Palettegen
@@ -19,5 +19,5 @@ export interface Context extends Required<Options> {
   /**
    * Paletteuse
    */
-  finderCache: Map<number, number>
+  finderCache: Map<number, Map<number, number>>
 }
