@@ -50,7 +50,7 @@ export function addSample(
       context2d.clearRect(0, 0, canvas.width, canvas.height)
       canvas.width = img.width
       canvas.height = img.height
-      context2d.drawImage(img, 0, 0)
+      context2d.drawImage(img, 0, 0, canvas.width, canvas.height)
       return addSample(
         context,
         context2d.getImageData(0, 0, img.width, img.height).data,
@@ -64,7 +64,7 @@ export function addSample(
     context2d.clearRect(0, 0, canvas.width, canvas.height)
     canvas.width = typeof source.width === 'number' ? source.width : source.width.baseVal.value
     canvas.height = typeof source.height === 'number' ? source.height : source.height.baseVal.value
-    context2d.drawImage(source, 0, 0)
+    context2d.drawImage(source, 0, 0, canvas.width, canvas.height)
     return addSample(
       context,
       context2d.getImageData(0, 0, canvas.width, canvas.height).data,
@@ -91,7 +91,7 @@ export function addSample(
     }
 
     const srgb = (r << 16) | (g << 8) | b
-    const key = Number(`${ a }${ srgb }`)
+    const key = a * 100000000 + srgb
 
     let index = colorSamplesCache.get(key)
     if (index !== undefined) {

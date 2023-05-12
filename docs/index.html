@@ -14,6 +14,7 @@
 
   const maxColors = 16 * 16
   const size = Math.sqrt(maxColors)
+  const img = document.querySelector('img')
   const el = document.querySelector('canvas')
   const elContext2d = el.getContext('2d')
   el.width = size
@@ -23,26 +24,24 @@
     maxColors,
   })
 
-  palette.addSample('/example.jpg').then(() => {
-    // eslint-disable-next-line no-console
-    console.time('generate')
-    palette.generate()
-    // eslint-disable-next-line no-console
-    console.timeEnd('generate')
+  // eslint-disable-next-line no-console
+  console.time('addSample')
+  palette.addSample(img)
+  // eslint-disable-next-line no-console
+  console.timeEnd('addSample')
 
-    elContext2d.putImageData(new ImageData(palette.getColors('buffer'), size, size), 0, 0)
+  // eslint-disable-next-line no-console
+  console.time('generate')
+  palette.generate()
+  // eslint-disable-next-line no-console
+  console.timeEnd('generate')
 
-    const colors = palette.getColors('hex')
+  elContext2d.putImageData(new ImageData(palette.getColors('buffer'), size, size), 0, 0)
 
-    // eslint-disable-next-line no-console
-    console.log(palette)
+  const colors = palette.getColors('hex')
 
-    // eslint-disable-next-line no-console
-    console.log(colors)
-
-    // eslint-disable-next-line no-console
-    console.log(palette.findNearestColor('#ffffff'))
-  })
+  // eslint-disable-next-line no-console
+  console.log(palette, colors, palette.findNearestColor('#ffffff'))
 </script>
 </body>
 </html>
