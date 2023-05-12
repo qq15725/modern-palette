@@ -1,3 +1,12 @@
+## [0.2.2](https://github.com/qq15725/modern-palette/compare/v0.2.1...v0.2.2) (2023-05-12)
+
+
+### Bug Fixes
+
+* clear the previous sample after generation ([5523788](https://github.com/qq15725/modern-palette/commit/552378887a2ebe0b594293d8db181b9433162f46))
+
+
+
 ## [0.2.1](https://github.com/qq15725/modern-palette/compare/v0.2.0...v0.2.1) (2023-05-12)
 
 
