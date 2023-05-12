@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/qq15725/modern-palette/compare/v0.2.0...v0.2.1) (2023-05-12)
+
+
+### Performance Improvements
+
+* Increase sampling speed ([483ac66](https://github.com/qq15725/modern-palette/commit/483ac66b1a32f9123789764eb891c17ad852ed37))
+
+
+
 # [0.2.0](https://github.com/qq15725/modern-palette/compare/v0.1.8...v0.2.0) (2023-05-11)
 
 
