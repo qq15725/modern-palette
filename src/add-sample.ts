@@ -53,7 +53,7 @@ export function addSample(
       context2d.drawImage(img, 0, 0, canvas.width, canvas.height)
       return addSample(
         context,
-        context2d.getImageData(0, 0, img.width, img.height).data,
+        context2d.getImageData(0, 0, canvas.width, canvas.height).data,
         options,
       )
     })

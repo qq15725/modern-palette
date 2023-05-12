@@ -58,7 +58,9 @@ export function createPalette(options?: Options | Context): Palette {
 
       return result
     },
-    generate(options) {
+    generate(options = {}) {
+      const { clearSamples = true } = options
+      if (clearSamples) previousSample = null
       generate(context, options)
       return this
     },
