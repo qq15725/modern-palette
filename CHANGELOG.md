@@ -1,3 +1,12 @@
+## [0.2.3](https://github.com/qq15725/modern-palette/compare/v0.2.2...v0.2.3) (2023-05-12)
+
+
+### Performance Improvements
+
+* performance optimization ([a5b5814](https://github.com/qq15725/modern-palette/commit/a5b58143b4c52120ef24b32068dc0f646af0b4b0))
+
+
+
 ## [0.2.2](https://github.com/qq15725/modern-palette/compare/v0.2.1...v0.2.2) (2023-05-12)
 
 
