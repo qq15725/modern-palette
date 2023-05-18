@@ -1,3 +1,12 @@
+## [0.2.4](https://github.com/qq15725/modern-palette/compare/v0.2.3...v0.2.4) (2023-05-18)
+
+
+### Features
+
+* add skipTransparent options ([91b3a7b](https://github.com/qq15725/modern-palette/commit/91b3a7b2b741dfcbbb3752cf07c987076217adb7))
+
+
+
 ## [0.2.3](https://github.com/qq15725/modern-palette/compare/v0.2.2...v0.2.3) (2023-05-12)
 
 
