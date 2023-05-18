@@ -44,14 +44,14 @@ const colors = palette.getColors('hex')
 // palette.getColors('buffer')
 
 console.log(colors)
-// [ { color: '#f1f110', percentage: 0.002063296404512621 }, ... ]
+// [ { value: '#f1f110', percentage: 0.002063296404512621 }, ... ]
 
 // Find the nearest color on the palette
 const nearestColor = palette.findNearestColor('#ffffff')
 // palette.findNearestColor([255, 255, 255])
 
 console.log(nearestColor)
-// { color: '#fbfbf6', index: 241 }
+// { value: '#fbfbf6', index: 241 }
 ```
 
 ## Options
