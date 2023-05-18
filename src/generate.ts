@@ -15,6 +15,8 @@ export function generate(
     colorSamples,
   } = context
 
+  if (!colorSamples.length) return
+
   const {
     maxColors = contextMaxColors,
     clearSamples = true,

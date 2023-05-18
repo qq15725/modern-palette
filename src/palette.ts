@@ -33,17 +33,17 @@ export interface Palette {
   /**
    * Get colors on the palette
    */
-  getColors(format: 'rgb'): { color: [number, number, number]; percentage: number }[]
-  getColors(format: 'hex'): { color: string; percentage: number }[]
+  getColors(format: 'rgb'): { value: [number, number, number]; percentage: number }[]
+  getColors(format: 'hex'): { value: string; percentage: number }[]
   getColors(format: 'buffer'): Uint8ClampedArray
-  getColors(): { color: number; percentage: number }[]
+  getColors(): { value: number; percentage: number }[]
 
   /**
    * Find the nearest color on the palette
    */
-  findNearestColor(color: [number, number, number]): { color: [number, number, number]; index: number } | undefined
-  findNearestColor(color: string): { color: string; index: number } | undefined
-  findNearestColor(color: number): { color: number; index: number } | undefined
+  findNearestColor(color: [number, number, number]): { value: [number, number, number]; index: number } | undefined
+  findNearestColor(color: string): { value: string; index: number } | undefined
+  findNearestColor(color: number): { value: number; index: number } | undefined
 
   /**
    * Reset palette

@@ -2,8 +2,9 @@ import { loadImage, srgbToOklab } from './utils'
 import type { Context } from './context'
 
 interface AddSampleOptions {
-  getContext2d?: () => CanvasRenderingContext2D | undefined | null
-  previousSample?: Uint8ClampedArray | null
+  getContext2d: () => CanvasRenderingContext2D | undefined | null
+  previousSample: Uint8ClampedArray | null
+  skipTransparent: boolean
 }
 
 export function addSample(
@@ -14,6 +15,7 @@ export function addSample(
   const {
     getContext2d,
     previousSample,
+    skipTransparent,
   } = options
 
   const {
@@ -77,6 +79,8 @@ export function addSample(
     const g = sample[i + 1]
     const b = sample[i + 2]
     const a = sample[i + 3]
+
+    if (skipTransparent && a === 0) continue
 
     if (mode === 'diff') {
       if (

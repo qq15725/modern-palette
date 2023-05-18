@@ -7,7 +7,7 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
   if (!type) return context.colorBoxes.map(val => {
     const { srgb, weight } = val
     return {
-      color: srgb,
+      value: srgb,
       percentage: weight / totalWeight,
     }
   })
@@ -16,7 +16,7 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
   for (let len = colorBoxes.length, i = 0; i < len; i++) {
     const { srgb, weight } = colorBoxes[i]
     colors.push({
-      color: [
+      value: [
         (srgb >> 16) & 0xFF,
         (srgb >> 8) & 0xFF,
         srgb & 0xFF,
@@ -31,7 +31,7 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
     result = new Uint8ClampedArray(colors.length * 4)
     for (let len = colors.length, i = 0; i < len; i++) {
       const p = i * 4
-      const rgb = colors[i].color
+      const rgb = colors[i].value
       result[p] = rgb[0]
       result[p + 1] = rgb[1]
       result[p + 2] = rgb[2]
@@ -40,12 +40,12 @@ export function getColors(context: Context, type?: 'hex' | 'rgb' | 'buffer') {
   } else if (type === 'hex') {
     result = []
     for (let len = colors.length, i = 0; i < len; i++) {
-      const { color, percentage } = colors[i]
-      const r = color[0].toString(16).padStart(2, '0')
-      const g = color[1].toString(16).padStart(2, '0')
-      const b = color[2].toString(16).padStart(2, '0')
+      const { value, percentage } = colors[i]
+      const r = value[0].toString(16).padStart(2, '0')
+      const g = value[1].toString(16).padStart(2, '0')
+      const b = value[2].toString(16).padStart(2, '0')
       result.push({
-        color: `#${ r }${ g }${ b }`,
+        value: `#${ r }${ g }${ b }`,
         percentage,
       })
     }

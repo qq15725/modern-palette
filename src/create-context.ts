@@ -16,6 +16,7 @@ export function createContext(options: Options = {}): Context {
     maxColors = 256,
     statsMode = 'full',
     samples = [],
+    skipTransparent = true,
   } = options
 
   return {
@@ -23,6 +24,7 @@ export function createContext(options: Options = {}): Context {
     samples,
     maxColors,
     statsMode,
+    skipTransparent,
     colorSamples: [],
     colorSamplesCache: new Map(),
     colorBoxes: [],

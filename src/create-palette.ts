@@ -16,6 +16,7 @@ export function createPalette(options?: Options | Context): Palette {
   const {
     statsMode,
     samples,
+    skipTransparent,
   } = context
 
   const getContext2d = (function () {
@@ -44,6 +45,7 @@ export function createPalette(options?: Options | Context): Palette {
       const result = addSample(context, sample, {
         getContext2d,
         previousSample,
+        skipTransparent,
       })
 
       ;(
@@ -75,7 +77,6 @@ export function createPalette(options?: Options | Context): Palette {
   if (samples.length) {
     samples.forEach((sample: any) => palette.addSample(sample))
     context.samples = []
-    palette.generate()
   }
 
   return palette

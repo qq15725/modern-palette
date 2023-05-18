@@ -17,4 +17,11 @@ export interface Options {
    * Samples color data
    */
   samples?: (number[] | number[][] | CanvasImageSource | BufferSource)[]
+
+  /**
+   * Whether to skip transparent colors during sampling
+   *
+   * @default true
+   */
+  skipTransparent?: boolean
 }

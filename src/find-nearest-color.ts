@@ -39,12 +39,12 @@ export function findNearestColor(
     const g = (srgb >> 8 & 0xFF).toString(16).padStart(2, '0')
     const b = (srgb & 0xFF).toString(16).padStart(2, '0')
     return {
-      color: `#${ r }${ g }${ b }`,
+      value: `#${ r }${ g }${ b }`,
       index,
     }
   } else if (typeof color === 'object' && Array.isArray(color)) {
     return {
-      color: [
+      value: [
         srgb >> 16 & 0xFF,
         srgb >> 8 & 0xFF,
         srgb & 0xFF,
@@ -54,7 +54,7 @@ export function findNearestColor(
   }
 
   return {
-    color: srgb,
+    value: srgb,
     index,
   }
 }
