@@ -32,11 +32,11 @@ import { createPalette } from 'modern-palette'
 const palette = createPalette({
   maxColors: 256,
   // (number[] | number[][] | CanvasImageSource | BufferSource)[]
-  samples: [
-    document.querySelector('img'),
-    [[255, 0, 0], [255, 0, 0]],
-  ],
+  samples: [document.querySelector('img'), [[255, 0, 0], [255, 0, 0]]],
 })
+
+// Generate palette colors data
+palette.generate()
 
 // Get colors on the palette
 const colors = palette.getColors('hex')
