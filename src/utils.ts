@@ -1,4 +1,4 @@
-import type { ColorSample, Oklab, Sort } from './types'
+import type { Oklab } from './types'
 
 export const IN_BROWSER = typeof window !== 'undefined'
 
@@ -12,7 +12,7 @@ const P = (1 << 9) - 1
  * Where x is the normalized index in the table and f(x) the value in the table.
  * f(x) is remapped to [0;K] and rounded.
  */
-const srgb2linear: number[] = [
+const gammaToLinear: number[] = [
   0x0000, 0x0014, 0x0028, 0x003C, 0x0050, 0x0063, 0x0077, 0x008B,
   0x009F, 0x00B3, 0x00C7, 0x00DB, 0x00F1, 0x0108, 0x0120, 0x0139,
   0x0154, 0x016F, 0x018C, 0x01AB, 0x01CA, 0x01EB, 0x020E, 0x0232,
@@ -127,10 +127,26 @@ function divRound64(a: number, b: number): number {
   return (a ^ b) < 0 ? (a - b / 2) / b : (a + b / 2) / b
 }
 
-export function srgbToOklab(rgb: number): Oklab {
-  const r = srgb2linear[rgb >> 16 & 0xFF]
-  const g = srgb2linear[rgb >> 8 & 0xFF]
-  const b = srgb2linear[rgb & 0xFF]
+export function rgbaToRgbUint24(
+  rgba: [number, number, number, number],
+  premultipliedAlpha = true,
+  tint = [0xFF, 0xFF, 0xFF],
+): number {
+  let [r, g, b, a] = rgba
+  if (!premultipliedAlpha) {
+    a /= 255
+    const _a = 1 - a
+    r = (r * a + _a * tint[0]) & 0xFF
+    g = (g * a + _a * tint[1]) & 0xFF
+    b = (b * a + _a * tint[2]) & 0xFF
+  }
+  return (r << 16) | (g << 8) | b
+}
+
+export function rgbUint24ToOklab(rgb: number): Oklab {
+  const r = gammaToLinear[rgb >> 16 & 0xFF]
+  const g = gammaToLinear[rgb >> 8 & 0xFF]
+  const b = gammaToLinear[rgb & 0xFF]
 
   // Note: lms can actually be slightly over K due to rounded coefficients
   const l = (27015 * r + 35149 * g + 3372 * b + K / 2) / K
@@ -141,14 +157,14 @@ export function srgbToOklab(rgb: number): Oklab {
   const m_ = cbrt01Int(m)
   const s_ = cbrt01Int(s)
 
-  return [
-    divRound64(13792 * l_ + 52010 * m_ - 267 * s_, K),
-    divRound64(129628 * l_ - 159158 * m_ + 29530 * s_, K),
-    divRound64(1698 * l_ + 51299 * m_ - 52997 * s_, K),
-  ]
+  return {
+    l: divRound64(13792 * l_ + 52010 * m_ - 267 * s_, K),
+    a: divRound64(129628 * l_ - 159158 * m_ + 29530 * s_, K),
+    b: divRound64(1698 * l_ + 51299 * m_ - 52997 * s_, K),
+  }
 }
 
-function linearIntToSrgbU8(x: number): number {
+function linearToGamma(x: number): number {
   if (x <= 0) {
     return 0
   } else if (x >= K) {
@@ -163,47 +179,20 @@ function linearIntToSrgbU8(x: number): number {
   }
 }
 
-export function oklabToSrgb(oklab: Oklab): number {
-  const l_ = oklab[0] + divRound64(25974 * oklab[1], K) + divRound64(14143 * oklab[2], K)
-  const m_ = oklab[0] + divRound64(-6918 * oklab[1], K) + divRound64(-4185 * oklab[2], K)
-  const s_ = oklab[0] + divRound64(-5864 * oklab[1], K) + divRound64(-84638 * oklab[2], K)
+export function oklabToRgbUint24(oklab: Oklab): number {
+  const l_ = oklab.l + divRound64(25974 * oklab.a, K) + divRound64(14143 * oklab.b, K)
+  const m_ = oklab.l + divRound64(-6918 * oklab.a, K) + divRound64(-4185 * oklab.b, K)
+  const s_ = oklab.l + divRound64(-5864 * oklab.a, K) + divRound64(-84638 * oklab.b, K)
 
   const l = l_ ** 2 * l_ / K2
   const m = m_ ** 2 * m_ / K2
   const s = s_ ** 2 * s_ / K2
 
-  const r = linearIntToSrgbU8((267169 * l + -216771 * m + 15137 * s + K / 2) / K)
-  const g = linearIntToSrgbU8((-83127 * l + 171030 * m + -22368 * s + K / 2) / K)
-  const b = linearIntToSrgbU8((-275 * l + -46099 * m + 111909 * s + K / 2) / K)
+  const r = linearToGamma((267169 * l + -216771 * m + 15137 * s + K / 2) / K)
+  const g = linearToGamma((-83127 * l + 171030 * m + -22368 * s + K / 2) / K)
+  const b = linearToGamma((-275 * l + -46099 * m + 111909 * s + K / 2) / K)
 
   return r << 16 | g << 8 | b
-}
-
-export function createSorter(sort: Sort) {
-  const map = { l: 0, a: 1, b: 2 }
-  const k0 = sort[0] as 'l' | 'a' | 'b'
-  const k1 = sort[1] as 'l' | 'a' | 'b'
-  const k2 = sort[2] as 'l' | 'a' | 'b'
-  const k00 = map[k0]
-  const k01 = map[k1]
-  const k02 = map[k2]
-
-  return (a: ColorSample, b: ColorSample) => {
-    return (a.oklab[k00] - b.oklab[k00])
-      || (a.oklab[k01] - b.oklab[k01])
-      || (a.oklab[k02] - b.oklab[k02])
-  }
-}
-
-export function sort3id(x: number, y: number, z: number): Sort {
-  if (x >= y) {
-    if (y >= z) return 'lab'
-    if (x >= z) return 'lba'
-    return 'bla'
-  }
-  if (x >= z) return 'alb'
-  if (y >= z) return 'abl'
-  return 'bal'
 }
 
 export function loadImage(url: string): Promise<HTMLImageElement> {

@@ -1,31 +1,30 @@
-// [l, a, b]
-export type Oklab = [number, number, number]
+export type ImageSource =
+  | string
+  | Array<number>
+  | Array<Array<number>>
+  | CanvasImageSource
+  | BufferSource
 
-export type Sort = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
+export type Pixels = ArrayLike<number>
 
-export interface ColorSample {
-  alpha: number
-  srgb: number
-  oklab: Oklab
-  count: number
+export interface Oklab {
+  l: number
+  a: number
+  b: number
 }
 
-export interface ColorBox {
-  start: number
-  end: number
-  length: number
-  score: number
-  weight: number
-  sort: Sort
-  sorted: Sort | null
-  srgb: number
+export type OklabSort = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
+
+export interface Color {
+  rgbUint24: number
   oklab: Oklab
+  refCount: number
 }
 
-export interface ColorNode {
-  oklab: Oklab
-  colorBoxIndex: number
-  longest: number
-  left: number
-  right: number
+export type Colors = Array<Color>
+
+export interface QuantizedColor extends Color {
+  percentage: number
 }
+
+export type QuantizedColors = Array<QuantizedColor>
