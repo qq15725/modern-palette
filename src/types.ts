@@ -13,18 +13,22 @@ export interface Oklab {
   b: number
 }
 
+export interface Rgb {
+  r: number
+  g: number
+  b: number
+}
+
 export type OklabSort = 'lab' | 'lba' | 'bla' | 'alb' | 'bal' | 'abl'
 
 export interface Color {
-  rgbUint24: number
-  oklab: Oklab
-  refCount: number
+  rgbInt: number
+  lab: Oklab
+  count: number
 }
-
-export type Colors = Array<Color>
 
 export interface QuantizedColor extends Color {
+  rgb: Rgb
+  hex: string
   percentage: number
 }
-
-export type QuantizedColors = Array<QuantizedColor>

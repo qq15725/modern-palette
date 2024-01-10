@@ -1,30 +1,30 @@
-import { rgbUint24ToOklab, rgbaToRgbUint24 } from '../utils'
-import type { Colors, Pixels } from '../types'
+import { rgbToOklab, rgbToRgbInt, rgbaToRgb } from '../utils'
+import type { Color, Pixels } from '../types'
 
-export class PixelsToColors implements ReadableWritablePair<Colors, Pixels> {
-  protected _colors: Colors = []
-  protected _rsControler!: ReadableStreamDefaultController<Colors>
+export class PixelsToColors implements ReadableWritablePair<Array<Color>, Pixels> {
+  protected _colors: Array<Color> = []
+  protected _rsControler!: ReadableStreamDefaultController<Array<Color>>
   protected _cache = new Map<number, Map<number, number>>()
   protected _previousPixels?: Pixels
 
   constructor(
-    public statsMode: 'diff' | 'full' = 'full',
+    public statsMode: 'diff' | 'full',
     public premultipliedAlpha: boolean,
     public tint: Array<number>,
   ) {
     //
   }
 
-  readable = new ReadableStream<Colors>({
+  readable = new ReadableStream<Array<Color>>({
     start: controler => this._rsControler = controler,
   })
 
   writable = new WritableStream<Pixels>({
     write: pixels => {
       for (let len = pixels.length, i = 0; i < len; i += 4) {
-        const r = pixels[i]
-        const g = pixels[i + 1]
-        const b = pixels[i + 2]
+        let r = pixels[i]
+        let g = pixels[i + 1]
+        let b = pixels[i + 2]
         const a = pixels[i + 3]
 
         if (this.statsMode === 'diff') {
@@ -39,30 +39,26 @@ export class PixelsToColors implements ReadableWritablePair<Colors, Pixels> {
           ) continue
         }
 
-        const rgbUint24 = rgbaToRgbUint24([r, g, b, a], this.premultipliedAlpha, this.tint)
-        const oklab = rgbUint24ToOklab(rgbUint24)
-        const color = {
-          rgbUint24,
-          oklab,
-          refCount: 1,
+        ({ r, g, b } = rgbaToRgb(r, g, b, a, this.premultipliedAlpha, this.tint))
+        const rgbInt = rgbToRgbInt(r, g, b)
+        const color: Color = {
+          rgbInt,
+          lab: rgbToOklab(r, g, b),
+          count: 1,
         }
-        const key = rgbUint24 % 32768
+        const key = rgbInt % 32768
 
         let map = this._cache.get(key)
         if (!map) {
-          map = new Map()
-          this._cache.set(key, map)
+          this._cache.set(key, map = new Map())
         }
-
-        let index = map.get(color.rgbUint24)
+        let index = map.get(rgbInt)
         if (index !== undefined) {
-          color.refCount++
+          this._colors[index].count++
           continue
         }
-
         index = this._colors.push(color) - 1
-
-        map.set(color.rgbUint24, index)
+        map.set(rgbInt, index)
       }
 
       if (this.statsMode === 'diff') {

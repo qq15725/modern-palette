@@ -1,4 +1,4 @@
-import type { Oklab } from './types'
+import type { Oklab, Rgb } from './types'
 
 export const IN_BROWSER = typeof window !== 'undefined'
 
@@ -127,12 +127,11 @@ function divRound64(a: number, b: number): number {
   return (a ^ b) < 0 ? (a - b / 2) / b : (a + b / 2) / b
 }
 
-export function rgbaToRgbUint24(
-  rgba: [number, number, number, number],
+export function rgbaToRgb(
+  r: number, g: number, b: number, a: number,
   premultipliedAlpha = true,
   tint = [0xFF, 0xFF, 0xFF],
-): number {
-  let [r, g, b, a] = rgba
+): Rgb {
   if (!premultipliedAlpha) {
     a /= 255
     const _a = 1 - a
@@ -140,13 +139,17 @@ export function rgbaToRgbUint24(
     g = (g * a + _a * tint[1]) & 0xFF
     b = (b * a + _a * tint[2]) & 0xFF
   }
+  return { r, g, b }
+}
+
+export function rgbToRgbInt(r: number, g: number, b: number): number {
   return (r << 16) | (g << 8) | b
 }
 
-export function rgbUint24ToOklab(rgb: number): Oklab {
-  const r = gammaToLinear[rgb >> 16 & 0xFF]
-  const g = gammaToLinear[rgb >> 8 & 0xFF]
-  const b = gammaToLinear[rgb & 0xFF]
+export function rgbToOklab(r: number, g: number, b: number): Oklab {
+  r = gammaToLinear[r]
+  g = gammaToLinear[g]
+  b = gammaToLinear[b]
 
   // Note: lms can actually be slightly over K due to rounded coefficients
   const l = (27015 * r + 35149 * g + 3372 * b + K / 2) / K
@@ -179,20 +182,20 @@ function linearToGamma(x: number): number {
   }
 }
 
-export function oklabToRgbUint24(oklab: Oklab): number {
+export function oklabToRgb(oklab: Oklab): Rgb {
   const l_ = oklab.l + divRound64(25974 * oklab.a, K) + divRound64(14143 * oklab.b, K)
   const m_ = oklab.l + divRound64(-6918 * oklab.a, K) + divRound64(-4185 * oklab.b, K)
   const s_ = oklab.l + divRound64(-5864 * oklab.a, K) + divRound64(-84638 * oklab.b, K)
 
-  const l = l_ ** 2 * l_ / K2
-  const m = m_ ** 2 * m_ / K2
-  const s = s_ ** 2 * s_ / K2
+  const l = l_ ** 3 / K2
+  const m = m_ ** 3 / K2
+  const s = s_ ** 3 / K2
 
-  const r = linearToGamma((267169 * l + -216771 * m + 15137 * s + K / 2) / K)
-  const g = linearToGamma((-83127 * l + 171030 * m + -22368 * s + K / 2) / K)
-  const b = linearToGamma((-275 * l + -46099 * m + 111909 * s + K / 2) / K)
+  const r = ~~linearToGamma((267169 * l + -216771 * m + 15137 * s + K / 2) / K)
+  const g = ~~linearToGamma((-83127 * l + 171030 * m + -22368 * s + K / 2) / K)
+  const b = ~~linearToGamma((-275 * l + -46099 * m + 111909 * s + K / 2) / K)
 
-  return r << 16 | g << 8 | b
+  return { r, g, b }
 }
 
 export function loadImage(url: string): Promise<HTMLImageElement> {

@@ -1,140 +1,133 @@
-import { rgbUint24ToOklab, rgbaToRgbUint24 } from './utils'
-import type { Oklab, QuantizedColors } from './types'
+import { rgbToOklab, rgbToRgbInt, rgbaToRgb } from './utils'
+import type { Oklab, QuantizedColor } from './types'
 
-interface FinderLeaf {
+interface FinderColorNode {
   left: number
   right: number
   longest: keyof Oklab
-  oklab: Oklab
+  lab: Oklab
   index: number
 }
 
-export type FinderTree = Array<FinderLeaf>
-
 export class Finder {
   protected _cache = new Map<number, Map<number, number>>()
-  protected _tree: FinderTree = []
+  protected _colorMap: Array<FinderColorNode> = []
 
   constructor(
-    protected _premultipliedAlpha: boolean,
-    protected _tint: Array<number>,
-    colors: QuantizedColors = [],
+    colors: Array<QuantizedColor> = [],
+    protected _premultipliedAlpha = false,
+    protected _tint = [0xFF, 0xFF, 0xFF],
   ) {
-    colors.length && this.update(colors)
+    colors.length && this.setup(colors)
   }
 
-  update(colors: QuantizedColors): void {
-    colors = colors.sort((a, b) => a.rgbUint24 - b.rgbUint24)
+  setup(colors: Array<QuantizedColor>): void {
+    colors = colors.sort((a, b) => a.rgbInt - b.rgbInt)
 
     this._cache.clear()
-    const tree: FinderTree = []
+    const colorMap: Array<FinderColorNode> = []
     const cache = new Map<number, boolean>()
 
     for (let prev = -1, len = colors.length, i = 0; i < len; i++) {
-      const { rgbUint24 } = colors[i]
-      if (rgbUint24 === prev) {
+      const { rgbInt } = colors[i]
+      if (rgbInt === prev) {
         cache.set(i, true)
         continue
       }
-      prev = rgbUint24
+      prev = rgbInt
     }
 
-    insert({
+    colormapInsert({
       min: [-0xFFFF, -0xFFFF, -0xFFFF],
       max: [0xFFFF, 0xFFFF, 0xFFFF],
     })
 
-    this._tree = tree
+    this._colorMap = colorMap
 
-    function next(minMax: Record<string, any>) {
+    function getNextColor(minMax: Record<string, any>) {
       const minMax1 = {
         min: [0xFFFF, 0xFFFF, 0xFFFF],
         max: [-0xFFFF, -0xFFFF, -0xFFFF],
       }
 
-      let colorsCount = 0
       const tmp = []
 
       for (let len = colors.length, i = 0; i < len; i++) {
-        const { oklab } = colors[i]
+        const { lab } = colors[i]
         if (
           cache.has(i)
-          || oklab.l < minMax.min[0] || oklab.a < minMax.min[1] || oklab.b < minMax.min[2]
-          || oklab.l > minMax.max[0] || oklab.a > minMax.max[1] || oklab.b > minMax.max[2]
+          || lab.l < minMax.min[0] || lab.a < minMax.min[1] || lab.b < minMax.min[2]
+          || lab.l > minMax.max[0] || lab.a > minMax.max[1] || lab.b > minMax.max[2]
         ) continue
-        if (oklab.l < minMax1.min[0]) minMax1.min[0] = oklab.l
-        if (oklab.a < minMax1.min[1]) minMax1.min[1] = oklab.a
-        if (oklab.b < minMax1.min[2]) minMax1.min[2] = oklab.b
-        if (oklab.l > minMax1.max[0]) minMax1.max[0] = oklab.l
-        if (oklab.a > minMax1.max[1]) minMax1.max[1] = oklab.a
-        if (oklab.b > minMax1.max[2]) minMax1.max[2] = oklab.b
-        tmp[colorsCount++] = {
-          oklab,
+
+        if (lab.l < minMax1.min[0]) minMax1.min[0] = lab.l
+        if (lab.a < minMax1.min[1]) minMax1.min[1] = lab.a
+        if (lab.b < minMax1.min[2]) minMax1.min[2] = lab.b
+
+        if (lab.l > minMax1.max[0]) minMax1.max[0] = lab.l
+        if (lab.a > minMax1.max[1]) minMax1.max[1] = lab.a
+        if (lab.b > minMax1.max[2]) minMax1.max[2] = lab.b
+
+        tmp.push({
+          lab,
           index: i,
-        }
+        })
       }
 
       let longest: keyof Oklab = 'l'
+      let longestIndex = 0
 
-      if (!colorsCount) return { index: -1, longest }
+      if (!tmp.length) return { index: -1, longest, longestIndex }
 
       const wL = minMax1.max[0] - minMax1.min[0]
       const wa = minMax1.max[1] - minMax1.min[1]
       const wb = minMax1.max[2] - minMax1.min[2]
+      if (wb >= wL && wb >= wa) {
+        longest = 'b'
+        longestIndex = 2
+      }
+      if (wa >= wL && wa >= wb) {
+        longest = 'a'
+        longestIndex = 1
+      }
       if (wL >= wa && wL >= wb) {
         longest = 'l'
-      } else if (wb >= wL && wb >= wa) {
-        longest = 'b'
-      } else if (wa >= wL && wa >= wb) {
-        longest = 'a'
+        longestIndex = 0
       }
-
       return {
-        index: tmp.sort((a, b) => a.oklab[longest] - b.oklab[longest])[colorsCount >> 1].index,
+        index: tmp.sort((a, b) => a.lab[longest] - b.lab[longest])[tmp.length >> 1].index,
         longest,
+        longestIndex,
       }
     }
 
-    function insert(minMax: Record<string, any>) {
-      const { index, longest } = next(minMax)
+    function colormapInsert(minMax: Record<string, any>) {
+      const { index, longest, longestIndex } = getNextColor(minMax)
 
       if (index < 0) return -1
+      cache.set(index, true)
 
-      const { oklab } = colors[index]
+      const { lab } = colors[index]
 
       const node = {
         left: 0,
         right: 0,
         longest,
-        oklab,
+        lab,
         index,
       }
 
-      let longestIndex = 0
-      switch (longest) {
-        case 'l':
-          longestIndex = 0
-          break
-        case 'a':
-          longestIndex = 1
-          break
-        case 'b':
-          longestIndex = 2
-          break
-      }
-
-      const newIndex = tree.push(node) - 1
-      cache.set(newIndex, true)
+      const newIndex = colorMap.push(node) - 1
 
       const minMax1 = { max: [...minMax.max], min: [...minMax.min] }
       const minMax2 = { max: [...minMax.max], min: [...minMax.min] }
-      minMax1.max[longestIndex] = oklab[longest]
-      minMax2.min[longestIndex] = Math.min(oklab[longest] + 1, 0xFFFF)
+      minMax1.max[longestIndex] = lab[longest]
+      minMax2.min[longestIndex] = Math.min(lab[longest] + 1, 0xFFFF)
 
-      const left = insert(minMax1)
+      const left = colormapInsert(minMax1)
       let right = -1
       if (minMax2.min[longestIndex] <= minMax2.max[longestIndex]) {
-        right = insert(minMax2)
+        right = colormapInsert(minMax2)
       }
 
       node.left = left
@@ -144,13 +137,13 @@ export class Finder {
     }
   }
 
-  protected _findNearestIndexToOutput(current: number, target: Oklab, output: { dist: number; index: number }): void {
-    const { left, right, longest, oklab, index } = this._tree[current]
+  protected _colormapNearestNode(current: number, target: Oklab, output: { dist: number; index: number }): void {
+    const { left, right, longest, lab, index } = this._colorMap[current]
 
     const dist = Math.min(
-      (target.l - oklab.l) ** 2
-      + (target.a - oklab.a) ** 2
-      + (target.b - oklab.b) ** 2,
+      (target.l - lab.l) ** 2
+      + (target.a - lab.a) ** 2
+      + (target.b - lab.b) ** 2,
       0xFFFFFFFF - 1,
     )
 
@@ -163,7 +156,7 @@ export class Finder {
     let further: number
 
     if (left !== -1 || right !== -1) {
-      const dx = target[longest] - oklab[longest]
+      const dx = target[longest] - lab[longest]
 
       if (dx <= 0) {
         nearer = left
@@ -174,22 +167,22 @@ export class Finder {
       }
 
       if (nearer !== -1) {
-        this._findNearestIndexToOutput(nearer, target, output)
+        this._colormapNearestNode(nearer, target, output)
       }
 
       if (further !== -1 && (dx ** 2) < output.dist) {
-        this._findNearestIndexToOutput(further, target, output)
+        this._colormapNearestNode(further, target, output)
       }
     }
   }
 
   findNearestIndex(r: number, g: number, b: number, a = 255): number {
-    const rgbInt = rgbaToRgbUint24([r, g, b, a], this._premultipliedAlpha, this._tint)
+    ({ r, g, b } = rgbaToRgb(r, g, b, a, this._premultipliedAlpha, this._tint))
+    const rgbInt = rgbToRgbInt(r, g, b)
     const key = rgbInt % 32768
     let map = this._cache.get(key)
     if (!map) {
-      map = new Map()
-      this._cache.set(key, map)
+      this._cache.set(key, map = new Map())
     }
     let index = map.get(rgbInt)
     if (index !== undefined) return index
@@ -197,7 +190,7 @@ export class Finder {
       dist: Number.MAX_SAFE_INTEGER,
       index: -1,
     }
-    this._findNearestIndexToOutput(0, rgbUint24ToOklab(rgbInt), output)
+    this._colormapNearestNode(0, rgbToOklab(r, g, b), output)
     index = output.index
     map.set(rgbInt, index)
     return index

@@ -32,16 +32,16 @@
 
   // eslint-disable-next-line no-console
   console.time('generate')
-  palette.generate()
-  // eslint-disable-next-line no-console
-  console.timeEnd('generate')
+  palette.generate().then(() => {
+    // eslint-disable-next-line no-console
+    console.timeEnd('generate')
 
-  elContext2d.putImageData(new ImageData(palette.getColors('buffer'), size, size), 0, 0)
+    elContext2d.putImageData(new ImageData(palette.toUint8Array(size * size * 4), size, size), 0, 0)
 
-  const colors = palette.getColors('hex')
-
-  // eslint-disable-next-line no-console
-  console.log(palette, colors, palette.findNearestColor('#ffffff'))
+    const colors = palette.toHexColors()
+    // eslint-disable-next-line no-console
+    console.log(palette, colors, palette.match('#ffffff'))
+  })
 </script>
 </body>
 </html>
