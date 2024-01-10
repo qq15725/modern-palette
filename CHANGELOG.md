@@ -1,3 +1,12 @@
+# [2.0.0](https://github.com/qq15725/modern-palette/compare/v0.2.4...v2.0.0) (2024-01-10)
+
+
+### Features
+
+* premultipliedAlpha ([d258fcb](https://github.com/qq15725/modern-palette/commit/d258fcbb926c246bed57d642bce9040053b85671))
+
+
+
 ## [0.2.4](https://github.com/qq15725/modern-palette/compare/v0.2.3...v0.2.4) (2023-05-18)
 
 
