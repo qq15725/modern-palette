@@ -26,44 +26,57 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./types/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./*": "./*"
   },
-  "main": "dist/index.mjs",
-  "module": "dist/index.mjs",
-  "types": "types/index.d.ts",
-  "browser": "dist/index.js",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/index.js",
   "typesVersions": {
     "*": {
       "*": [
-        "./types/*",
-        "./types/index.d.ts"
+        "./dist/*",
+        "./dist/index.d.ts"
       ]
     }
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "scripts": {
-    "dev": "vite docs",
+    "dev": "vite",
     "lint": "eslint src",
-    "test": "vitest --no-threads --no-isolate",
-    "build": "vite build && tsc --project tsconfig.build.json",
-    "build:docs": "vite build docs",
+    "lint:fix": "eslint src --fix",
+    "test": "vitest --no-isolate",
+    "coverage": "vitest run --coverage",
+    "build": "vite build && unbuild",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag"
+    "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks"
   },
   "devDependencies": {
-    "@qq15725/eslint-config": "^1.1.0",
-    "@types/node": "^20.1.0",
-    "bumpp": "^9.1.0",
-    "conventional-changelog-cli": "^2.2.2",
-    "eslint": "^8.40.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.3.5",
-    "vitest": "^0.31.0"
+    "@antfu/eslint-config": "^3.7.1",
+    "@types/dom-webcodecs": "^0.1.7",
+    "@types/node": "^22.6.1",
+    "bumpp": "^9.8.1",
+    "conventional-changelog-cli": "^5.0.0",
+    "eslint": "^9.14.0",
+    "lint-staged": "^15.2.10",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.7.2",
+    "unbuild": "^3.0.1",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.4"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint src --fix"
   }
 }

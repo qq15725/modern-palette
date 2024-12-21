@@ -15,9 +15,9 @@ export interface PaletteOptions {
    */
   statsMode?:
   // Compute full frame histograms
-  | 'diff'
+    | 'diff'
   // Compute histograms only for the part that differs from previous frame
-  | 'full'
+    | 'full'
 
   /**
    * Premultiplied alpha

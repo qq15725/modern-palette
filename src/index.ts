@@ -1,5 +1,5 @@
-export * from './transformers'
 export * from './Finder'
 export * from './options'
 export * from './Palette'
+export * from './transformers'
 export * from './types'

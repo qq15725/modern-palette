@@ -1,5 +1,5 @@
-import { oklabToRgb, rgbToRgbInt } from '../utils'
 import type { Color, Oklab, OklabSort, QuantizedColor } from '../types'
+import { oklabToRgb, rgbToRgbInt } from '../utils'
 
 interface Box {
   count: number
@@ -38,7 +38,7 @@ export class MedianCut implements ReadableWritablePair<Array<QuantizedColor>, Ar
   })
 
   writable = new WritableStream<Array<Color>>({
-    write: colors => {
+    write: (colors) => {
       this._rsControler.enqueue(
         this._boxesToQuantizedColors(
           this._colorsToBoxes(colors),
@@ -66,12 +66,16 @@ export class MedianCut implements ReadableWritablePair<Array<QuantizedColor>, Ar
 
     const sort3id = (x: number, y: number, z: number): OklabSort => {
       if (x >= y) {
-        if (y >= z) return 'lab'
-        if (x >= z) return 'lba'
+        if (y >= z)
+          return 'lab'
+        if (x >= z)
+          return 'lba'
         return 'bla'
       }
-      if (x >= z) return 'alb'
-      if (y >= z) return 'abl'
+      if (x >= z)
+        return 'alb'
+      if (y >= z)
+        return 'abl'
       return 'bal'
     }
 
@@ -122,7 +126,8 @@ export class MedianCut implements ReadableWritablePair<Array<QuantizedColor>, Ar
     const next = (): number => {
       let bestIndex = -1
       let maxScore = -1
-      if (boxesLength === this.maxColors) return -1
+      if (boxesLength === this.maxColors)
+        return -1
       for (let i = 0; i < boxesLength; i++) {
         const box = boxes[i]
         if (box.count >= 2 && box.score > maxScore) {
@@ -153,7 +158,8 @@ export class MedianCut implements ReadableWritablePair<Array<QuantizedColor>, Ar
       let weight = 0
       for (; index < end - 1; index++) {
         weight += colors[index].count
-        if (weight > medianWeight) break
+        if (weight > medianWeight)
+          break
       }
 
       split(box, index)
@@ -169,12 +175,12 @@ export class MedianCut implements ReadableWritablePair<Array<QuantizedColor>, Ar
 
   protected _boxesToQuantizedColors(boxes: Array<Box>): Array<QuantizedColor> {
     const totalWeight = boxes.reduce((total, val) => total + val.weight, 0)
-    return boxes.map(box => {
+    return boxes.map((box) => {
       const { r, g, b } = oklabToRgb(box.avg)
       return {
         rgbInt: rgbToRgbInt(r, g, b),
         rgb: { r, g, b },
-        hex: `#${ r.toString(16).padStart(2, '0') }${ g.toString(16).padStart(2, '0') }${ b.toString(16).padStart(2, '0') }`,
+        hex: `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`,
         lab: box.avg,
         count: box.weight,
         percentage: box.weight / totalWeight,

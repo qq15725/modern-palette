@@ -1,19 +1,19 @@
+import type { PaletteOptions } from './options'
+import type { ImageSource, Oklab, QuantizedColor, Rgb } from './types'
+import { Finder } from './Finder'
 import {
   ImageToPixels,
   MedianCut,
   PixelsToColors,
 } from './transformers'
-import { Finder } from './Finder'
-import type { PaletteOptions } from './options'
-import type { ImageSource, QuantizedColor } from './types'
 
 export type PaletteConfig = Required<PaletteOptions>
 
 export class Palette {
   config: PaletteConfig
-  colors: Array<QuantizedColor> = []
+  colors: QuantizedColor[] = []
   finder?: Finder
-  protected _stream: ReadableStream<Array<QuantizedColor>>
+  protected _stream: ReadableStream<QuantizedColor[]>
   protected _streamControler!: ReadableStreamDefaultController<ImageSource>
 
   constructor(options: PaletteOptions = {}) {
@@ -41,7 +41,7 @@ export class Palette {
     }
   }
 
-  protected _createStream() {
+  protected _createStream(): ReadableStream {
     let quantizer
     switch (this.config.algorithm) {
       case 'median-cut':
@@ -51,7 +51,7 @@ export class Palette {
     }
 
     return new ReadableStream({
-      start: controler => {
+      start: (controler) => {
         this._streamControler = controler
         this.config.samples.forEach(sample => controler.enqueue(sample))
       },
@@ -65,11 +65,11 @@ export class Palette {
     this._streamControler.enqueue(sample)
   }
 
-  generate(): Promise<Array<QuantizedColor>> {
-    return new Promise(resolve => {
+  generate(): Promise<QuantizedColor[]> {
+    return new Promise((resolve) => {
       this._streamControler.close()
       this._stream.pipeTo(new WritableStream({
-        write: colors => {
+        write: (colors) => {
           this.colors = colors
           this.finder = new Finder(colors, this.config.premultipliedAlpha, this.config.tint)
           this._stream = this._createStream()
@@ -79,8 +79,8 @@ export class Palette {
     })
   }
 
-  match(color: Array<number> | string | number): { color: QuantizedColor; index: number } | undefined {
-    let rgba: Array<number>
+  match(color: number[] | string | number): { color: QuantizedColor, index: number } | undefined {
+    let rgba: number[]
     if (typeof color === 'number') {
       rgba = [
         (color >> 24) & 0xFF,
@@ -88,23 +88,28 @@ export class Palette {
         (color >> 8) & 0xFF,
         color & 0xFF,
       ]
-    } else if (typeof color === 'string') {
+    }
+    else if (typeof color === 'string') {
       const str = color.replace(/^#/, '')
       rgba = [
-        `${ str[0] }${ str[1] }`,
-        `${ str[2] }${ str[3] }`,
-        `${ str[4] }${ str[5] }`,
-      ].map(val => parseInt(val, 16))
-    } else if (Array.isArray(color)) {
+        `${str[0]}${str[1]}`,
+        `${str[2]}${str[3]}`,
+        `${str[4]}${str[5]}`,
+      ].map(val => Number.parseInt(val, 16))
+    }
+    else if (Array.isArray(color)) {
       rgba = color
-    } else {
+    }
+    else {
       throw new TypeError('Unsupported color format')
     }
 
     const index = this.finder?.findNearestIndex(rgba[0], rgba[1], rgba[2], rgba[3])
-    if (index === undefined || index < 0) return undefined
+    if (index === undefined || index < 0)
+      return undefined
     const targetColor = this.colors[index]
-    if (!targetColor) return undefined
+    if (!targetColor)
+      return undefined
 
     return {
       color: targetColor,
@@ -112,23 +117,23 @@ export class Palette {
     }
   }
 
-  toColors() {
+  toColors(): QuantizedColor[] {
     return this.colors.slice()
   }
 
-  toHexColors() {
+  toHexColors(): string[] {
     return this.colors.map(color => color.hex)
   }
 
-  toRgbColors() {
+  toRgbColors(): Rgb[] {
     return this.colors.map(color => color.rgb)
   }
 
-  toRgbIntColors() {
+  toRgbIntColors(): number[] {
     return this.colors.map(color => color.rgbInt)
   }
 
-  toLabColors() {
+  toLabColors(): Oklab[] {
     return this.colors.map(color => color.lab)
   }
 

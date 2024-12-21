@@ -1,5 +1,5 @@
-import { rgbToOklab, rgbToRgbInt, rgbaToRgb } from '../utils'
 import type { Color, Pixels } from '../types'
+import { rgbaToRgb, rgbToOklab, rgbToRgbInt } from '../utils'
 
 export class PixelsToColors implements ReadableWritablePair<Array<Color>, Pixels> {
   protected _colors: Array<Color> = []
@@ -20,7 +20,7 @@ export class PixelsToColors implements ReadableWritablePair<Array<Color>, Pixels
   })
 
   writable = new WritableStream<Pixels>({
-    write: pixels => {
+    write: (pixels) => {
       for (let len = pixels.length, i = 0; i < len; i += 4) {
         let r = pixels[i]
         let g = pixels[i + 1]
@@ -36,7 +36,9 @@ export class PixelsToColors implements ReadableWritablePair<Array<Color>, Pixels
               && b === this._previousPixels[i + 2]
               && a === this._previousPixels[i + 3]
             )
-          ) continue
+          ) {
+            continue
+          }
         }
 
         ({ r, g, b } = rgbaToRgb(r, g, b, a, this.premultipliedAlpha, this.tint))

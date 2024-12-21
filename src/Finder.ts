@@ -1,5 +1,5 @@
-import { rgbToOklab, rgbToRgbInt, rgbaToRgb } from './utils'
 import type { Oklab, QuantizedColor } from './types'
+import { rgbaToRgb, rgbToOklab, rgbToRgbInt } from './utils'
 
 interface FinderColorNode {
   left: number
@@ -44,7 +44,7 @@ export class Finder {
 
     this._colorMap = colorMap
 
-    function getNextColor(minMax: Record<string, any>) {
+    function getNextColor(minMax: Record<string, any>): { index: number, longest: 'l' | 'a' | 'b', longestIndex: number } {
       const minMax1 = {
         min: [0xFFFF, 0xFFFF, 0xFFFF],
         max: [-0xFFFF, -0xFFFF, -0xFFFF],
@@ -58,15 +58,23 @@ export class Finder {
           cache.has(i)
           || lab.l < minMax.min[0] || lab.a < minMax.min[1] || lab.b < minMax.min[2]
           || lab.l > minMax.max[0] || lab.a > minMax.max[1] || lab.b > minMax.max[2]
-        ) continue
+        ) {
+          continue
+        }
 
-        if (lab.l < minMax1.min[0]) minMax1.min[0] = lab.l
-        if (lab.a < minMax1.min[1]) minMax1.min[1] = lab.a
-        if (lab.b < minMax1.min[2]) minMax1.min[2] = lab.b
+        if (lab.l < minMax1.min[0])
+          minMax1.min[0] = lab.l
+        if (lab.a < minMax1.min[1])
+          minMax1.min[1] = lab.a
+        if (lab.b < minMax1.min[2])
+          minMax1.min[2] = lab.b
 
-        if (lab.l > minMax1.max[0]) minMax1.max[0] = lab.l
-        if (lab.a > minMax1.max[1]) minMax1.max[1] = lab.a
-        if (lab.b > minMax1.max[2]) minMax1.max[2] = lab.b
+        if (lab.l > minMax1.max[0])
+          minMax1.max[0] = lab.l
+        if (lab.a > minMax1.max[1])
+          minMax1.max[1] = lab.a
+        if (lab.b > minMax1.max[2])
+          minMax1.max[2] = lab.b
 
         tmp.push({
           lab,
@@ -77,7 +85,8 @@ export class Finder {
       let longest: keyof Oklab = 'l'
       let longestIndex = 0
 
-      if (!tmp.length) return { index: -1, longest, longestIndex }
+      if (!tmp.length)
+        return { index: -1, longest, longestIndex }
 
       const wL = minMax1.max[0] - minMax1.min[0]
       const wa = minMax1.max[1] - minMax1.min[1]
@@ -101,10 +110,11 @@ export class Finder {
       }
     }
 
-    function colormapInsert(minMax: Record<string, any>) {
+    function colormapInsert(minMax: Record<string, any>): number {
       const { index, longest, longestIndex } = getNextColor(minMax)
 
-      if (index < 0) return -1
+      if (index < 0)
+        return -1
       cache.set(index, true)
 
       const { lab } = colors[index]
@@ -137,7 +147,7 @@ export class Finder {
     }
   }
 
-  protected _colormapNearestNode(current: number, target: Oklab, output: { dist: number; index: number }): void {
+  protected _colormapNearestNode(current: number, target: Oklab, output: { dist: number, index: number }): void {
     const { left, right, longest, lab, index } = this._colorMap[current]
 
     const dist = Math.min(
@@ -161,7 +171,8 @@ export class Finder {
       if (dx <= 0) {
         nearer = left
         further = right
-      } else {
+      }
+      else {
         nearer = right
         further = left
       }
@@ -185,7 +196,8 @@ export class Finder {
       this._cache.set(key, map = new Map())
     }
     let index = map.get(rgbInt)
-    if (index !== undefined) return index
+    if (index !== undefined)
+      return index
     const output = {
       dist: Number.MAX_SAFE_INTEGER,
       index: -1,
